@@ -8,6 +8,11 @@
    % spike event
    
 %% Scripts starts here
+%% 
+LED_stim=1;
+intr_prop=0;
+
+
 %% Set directories and experimentator
 experimentator= 'SW';
 rdata_dir         = 'K:\SimonWeiler\RawData\Ephys_slice';%data directory of raw data;change accordingly
@@ -40,7 +45,7 @@ adder=1;%counting variable
             idx_led=find(contains({list(:).name},'LED')==1);
             intrlist={'IV','Passive','Rheobase','Passive','Sag'};
             idx_intr=find(contains({list(:).name},intrlist)==1);
-            
+        if LED_stim==1
             %Get LED stimuli of the cell
             if isempty(idx_led)==1
                disp('No LED evoked stimulus measured');
@@ -64,17 +69,77 @@ adder=1;%counting variable
                     if contains(stimuli_type,'train')==1 
                        delay=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Delay)*sr;
                        pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.PulseDuration)*sr;
-                       endtime=data.header.StimulusLibrary.Stimuli.element12.Delegate.EndTime;
-                       period=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Period);
+                       endtime=data.header.StimulusLibrary.Stimuli.element12.Delegate.EndTime*sr;
+                       period=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Period)*sr;
                        duration=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Duration)*sr
-                       
-                       %stimvec=[firstamp:ampch:(pulsenr*ampch+(firstamp-ampch))];
+                       freq=duration/period;
+                       %Plotting
+                       fig5= figure;set(fig5, 'Name', 'LED stimulation');set(fig5, 'Position', [200, 100, 400, 200]);set(gcf,'color','w');
+                       plot(filt_traces,'Color','k','LineWidth',1);box off;axis off;ylim([min(filt_traces)-50 abs(max(filt_traces))*1.5]);
+                       hold on;co=[0:1:freq-1];
+                       for h=1:freq
+                       x1=delay+duration/freq*co(h);
+                       x2=(delay+pulsedur)+duration/freq*co(h);
+                       p1=plot([x1 x2],[abs(max(filt_traces))*1.1 abs(max(filt_traces))*1.1],'-','Color','b','LineWidth',2);
+                       end
+                       hold on;text(0,abs(max(filt_traces))*1.5,'472 nm','Color','b');
+                       scale_x= 200;
+                       scale_y= 40;
+                       ov_min=min(min(filt_traces));
+                       %scale barx
+                       hold on;x1= length(filt_traces)-200*srF;x2=length(filt_traces);p1=plot([x1 x2],[ov_min-45 ov_min-45],'-','Color','k','LineWidth',1.5);
+                       %scale bary
+                       hold on;y2= (ov_min-45)+scale_y;y1=(ov_min-45);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+                       title(cell_ab);
+                    elseif contains(stimuli_type,'VC')==1 
+                     delay=str2num(data.header.StimulusLibrary.Stimuli.element11.Delegate.Delay)*sr;
+                       pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element11.Delegate.Duration)*sr;
+                       endtime=data.header.StimulusLibrary.Stimuli.element11.Delegate.EndTime*sr;
+                       %Plotting
+                       fig6= figure;set(fig6, 'Name', 'LED stimulation');set(fig6, 'Position', [200, 100, 400, 200]);set(gcf,'color','w');
+                       plot(filt_traces,'Color','k','LineWidth',1);box off;axis off;ylim([min(filt_traces)-50 abs(max(filt_traces))*1.5]);
+                       hold on;
+                       x1=delay;
+                       x2=delay+pulsedur;
+                       p1=plot([x1 x2],[abs(max(filt_traces))*1.1 abs(max(filt_traces))*1.1],'-','Color','b','LineWidth',5);
+                       hold on;text(0,abs(max(filt_traces))*1.5,'472 nm','Color','b');
+                        scale_x= 200;
+                       scale_y= abs(min(filt_traces))/10;
+                       ov_min=min(min(filt_traces));
+                       %scale barx
+                       hold on;x1= length(filt_traces)-50*srF;x2=length(filt_traces);p1=plot([x1 x2],[ov_min-45 ov_min-45],'-','Color','k','LineWidth',1.5);
+                       %scale bary
+                       hold on;y2= (ov_min-45)+scale_y;y1=(ov_min-45);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+                       title(cell_ab);
+                    elseif contains(stimuli_type,'pulse')==1 
+                        delay=str2num(data.header.StimulusLibrary.Stimuli.element11.Delegate.Delay)*sr;
+                       pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element11.Delegate.Duration)*sr;
+                       endtime=data.header.StimulusLibrary.Stimuli.element11.Delegate.EndTime*sr;
+                       %Plotting
+                       fig7= figure;set(fig7, 'Name', 'LED stimulation');set(fig7, 'Position', [200, 100, 400, 200]);set(gcf,'color','w');
+                       plot(filt_traces,'Color','k','LineWidth',1);box off;axis off;ylim([min(filt_traces)-50 abs(max(filt_traces))*1.5]);
+                       hold on;
+                       x1=delay;
+                       x2=delay+pulsedur;
+                       p1=plot([x1 x2],[abs(max(filt_traces))*1.1 abs(max(filt_traces))*1.1],'-','Color','b','LineWidth',5);
+                       hold on;text(0,abs(max(filt_traces))*1.5,'472 nm','Color','b');
+                        scale_x= 200;
+                       scale_y= abs(min(filt_traces))/10;
+                       ov_min=min(min(filt_traces));
+                       %scale barx
+                       hold on;x1= length(filt_traces)-50*srF;x2=length(filt_traces);p1=plot([x1 x2],[ov_min-45 ov_min-45],'-','Color','k','LineWidth',1.5);
+                       %scale bary
+                       hold on;y2= (ov_min-45)+scale_y;y1=(ov_min-45);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+                       title(cell_ab);
                     else
+                        disp('to be implemented');
                     end
                 end
             end
             
-            
+        end   
+        
+       if intr_prop==1;
             %Get the intrinsic properties of the cell
             if isempty(idx_intr)==1
                 disp('No intrinsic properties measured');
@@ -253,6 +318,7 @@ adder=1;%counting variable
                     else   
                         disp('Uncharted waters');
                     end
+             end
              end
             end
        end
