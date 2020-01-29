@@ -1,7 +1,8 @@
 function [peak_n peak_p sub_traces] = ephys_LED(filename, data, clamp)
 
-fc=3;
+fc=7;
 base_start=1;
+resp_win=0.05%50 ms in s
 
 sr=data.header.StimulationSampleRate;
 temp=str2num(filename(end-3));
@@ -39,10 +40,10 @@ srF=sr/1000;
       bs_traces(:,k)=traces_clip-mean(traces_clip(base_start:delay,:));%subtract baseline
       
        %Negative peak
-          neg_peak(k)=min(bs_traces(delay:end,k));
+          neg_peak(k)=min(bs_traces(delay:delay+0.05*sr,k));
           neg_fail(k)=neg_peak(k)<fc*bs_std(k)*(-1); 
           %Positive peak
-          pos_peak(k)=max(bs_traces(delay:end,k));
+          pos_peak(k)=max(bs_traces(delay:delay+0.05*sr,k));
           pos_fail(k)=pos_peak(k)>fc*bs_std(k); 
           %Replace values with 0 where 3std is not applicable
            if neg_fail(k)==1;
@@ -106,7 +107,7 @@ srF=sr/1000;
              peak_n=peak_ladder_n;
              peak_p=peak_ladder_p;
              sub_traces=filt_traces-mean(filt_traces(base_start:delay,:));
-             sub_traces=sub_traces(1:200:end,:);
+             sub_traces=sub_traces(1:end,:);
              
            
     else

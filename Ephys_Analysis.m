@@ -11,14 +11,16 @@
 %% 
 LED_stim=1;
 intr_prop=1;
+image_prop=0;
 savefile=0;
 
 
 %% Set directories and experimentator
 experimentator= 'SW';
-rdata_dir         = 'K:\SimonWeiler\RawData\Ephys_slice';%data directory of raw data;change accordingly
-adata_dir         = 'K:\SimonWeiler\AnalyzedData\Ephys_slice';%data directory of extracted date;change accordingly
+rdata_dir         = 'C:\Users\Simon-localadmin\Documents\MargrieLab\MatlabCode\Electrophysiology\Ephys_slice';%data directory of raw data;change accordingly
+adata_dir         = 'C:\Users\Simon-localadmin\Documents\MargrieLab\MatlabCode\Electrophysiology\Ephys_slice\output_structure';%data directory of extracted date;change accordingly
 ExpXls            = 'C:\Users\Simon-localadmin\Documents\MargrieLab\Excel_exp_list\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
+
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
 nummice           = length(batchopt.mouse);%length of experiments to be analyzed
@@ -47,6 +49,20 @@ adder=1;%counting variable
             
             intrlist={'IV','Passive','Rheobase','Passive','Sag','Ramp'};
             idx_intr=find(contains({list(:).name},intrlist)==1);
+            
+            
+              %setting up structure
+            Ephys(adder).animal_name=[char(batchopt.mouseID{i})];
+            Ephys(adder).patching_date=batchopt.mouse{i};
+            Ephys(adder).celID=fold_name;
+            Ephys(adder).slice=batchopt.slicen{i} (k);
+            
+            Ephys(adder).sag=batchopt.sag{i} (k);
+            Ephys(adder).label=batchopt.labelcell{i} (k);
+            
+            
+            
+             
             
         if LED_stim==1
             %Get LED stimuli of the cell
@@ -85,17 +101,11 @@ adder=1;%counting variable
                
             end
             
-            %setting up structure
-            Ephys(adder).animal_name=[char(batchopt.mouseID{i})];
-            Ephys(adder).patching_date=batchopt.mouse{i};
-            Ephys(adder).celID=fold_name;
-            Ephys(adder).slice=batchopt.slicen{i} (k);
-            Ephys(adder).clamp=clamp_v;
-            Ephys(adder).sag=batchopt.sag{i} (k);
-            Ephys(adder).label=batchopt.labelcell{i} (k);
             Ephys(adder).train_n=train_n;
             Ephys(adder).train_p=train_p;
             Ephys(adder).sub_traces_train=sub_traces_train;
+            Ephys(adder).clamp=clamp_v;
+           
             if exist('ladder_n')==1;
                 Ephys(adder).ladder_n=ladder_n;
                 Ephys(adder).ladder_p=ladder_p;
@@ -137,10 +147,26 @@ adder=1;%counting variable
                 
              [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder); 
                
-                    
+            Ephys(adder).IV=IV;
+            Ephys(adder).Rheobase=Rheobase;
+            Ephys(adder).Passive=Passive;
+            Ephys(adder).Sag=Sag;
+            Ephys(adder).Ramp=Ramp;
+            
+            adder=adder+1;      
                     
             end
-            end
+       end
+       %% Image L6 pial depth read out
+       if image_prop==1;
+       [pial_depth dis xi yi] = img_prop(list,exp_folder);
+       Ephys(adder).pial_depth=pial_depth;
+       Ephys(adder).xi=xi;
+       Ephys(adder).yi=yi;
+       Ephys(adder).dis=dis;
+       adder=adder+1; 
+       end
+       
             %% 
              
 %             if exist('ramp')==1;
@@ -152,13 +178,7 @@ adder=1;%counting variable
 %                 Ephys(adder).ladder_p=[];
 %                 Ephys(adder).sub_traces_ladder=[];
 %             end
-            Ephys(adder).IV=IV;
-            Ephys(adder).Rheobase=Rheobase;
-            Ephys(adder).Passive=Passive;
-            Ephys(adder).Sag=Sag;
-            Ephys(adder).Ramp=Ramp;
-            
-            adder=adder+1;
+           
             
             end
       end

@@ -10,7 +10,12 @@ expcol         = find(~cellfun(@isempty, strfind(xls_txt(1,:),'CellID')));
 injecthem= find(~cellfun(@isempty, strfind(xls_txt(1,:),'InjectionH')));
 recordhem= find(~cellfun(@isempty, strfind(xls_txt(1,:),'RecordingH')));
 genotcol= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Genotype')));
+slicenr= find(~cellfun(@isempty, strfind(xls_txt(1,:),'SliceNr')));
+sagflag= find(~cellfun(@isempty, strfind(xls_txt(1,:),'SagFlag')));
+label= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Label')));
+genotype= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Genotypecode')));
 loaddrivecol  = find(~cellfun(@isempty, strfind(xls_txt(1,:),'loaddrive')));
+
 
 k = 1;
 
@@ -34,14 +39,19 @@ for i = 2:size(xls_txt,1)
     expcellids{k}                = xls_txt(i,expcol);
     expcellids2{k}                = xls_txt(i,injecthem);
     expcellids3{k}                = xls_txt(i,recordhem);
-    
+    expcellids4{k}                = xls_txt(i,slicenr);
+    expcellids5{k}                = xls_txt(i,sagflag);
+    expcellids6{k}                = xls_txt(i,label);
+    expcellids7{k}                = xls_txt(i,genotype);
   
     batchopt.exp_ids{k}        = str2num((expcellids{k}{1}));
     batchopt.injectH{k}        = (expcellids2{k}{1});
     batchopt.recordH{k}        = (expcellids3{k}{1});
     
-    
-    
+    batchopt.slicen{k}         = str2num((expcellids4{k}{1}));
+    batchopt.sag{k}            = str2num((expcellids5{k}{1}));
+    batchopt.labelcell{k}      = str2num((expcellids6{k}{1}));
+    batchopt.geno{k}           = str2num((expcellids7{k}{1}));
     %batchopt.eye_inj_order{k}  = str2num((expcellids12{k}{1}));
     %     batchopt.spont_ids{k}          = str2num((spontcellids{k}{1}));
     %     batchopt.sftf_ids{k}          = str2num((sftfcellids{k}{1}));
