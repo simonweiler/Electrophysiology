@@ -12,7 +12,7 @@
 LED_stim=1;
 intr_prop=1;
 image_prop=0;
-savefile=0;
+savefile=1;
 
 
 %% Set directories and experimentator
@@ -59,7 +59,9 @@ adder=1;%counting variable
             
             Ephys(adder).sag=batchopt.sag{i} (k);
             Ephys(adder).label=batchopt.labelcell{i} (k);
-            
+            Ephys(adder).area=batchopt.brainarea{i} (k);
+            Ephys(adder).wc=batchopt.wholecell{i} (k);
+            Ephys(adder).sol=batchopt.solution{i} (k);
             
             
              
@@ -86,11 +88,11 @@ adder=1;%counting variable
                 
                 %call function ephys_LED
                 if contains(stimuli_type,'train')==1 || contains(stimuli_type,'square')==1   
-                [train_n(:,count1) train_p(:,count1) sub_traces_train(:,count1)] = ephys_LED(filename,data,clamp);
+                [train_n(:,count1) train_p(:,count1) dpeak_n(:,count1) dpeak_p(:,count1) sub_traces_train(:,count1)] = ephys_LED(filename,data,clamp);
                 clamp_v(count1)=clamp;
                 count1=count1+1;
                 elseif contains(stimuli_type,'ladder')==1;
-                    [ladder_n(:,count2) ladder_p(:,count2) sub_traces_ladder(:,count2)] = ephys_LED(filename,data,clamp);
+                    [ladder_n(:,count2) ladder_p(:,count2)  dpeak_n_ladder(:,count2) dpeak_p_ladder(:,count2) sub_traces_ladder(:,count2)] = ephys_LED(filename,data,clamp);
                 clamp_v(count2)=clamp;
                     count2=count2+1;
                 else
@@ -103,6 +105,8 @@ adder=1;%counting variable
             
             Ephys(adder).train_n=train_n;
             Ephys(adder).train_p=train_p;
+            Ephys(adder).dpeak_n=dpeak_n;
+            Ephys(adder).dpeak_p=dpeak_p;
             Ephys(adder).sub_traces_train=sub_traces_train;
             Ephys(adder).clamp=clamp_v;
            
@@ -143,6 +147,13 @@ adder=1;%counting variable
                 Passive=[];
                 Sag=[];
                 Ramp=[];
+                
+            Ephys(adder).IV=IV;
+            Ephys(adder).Rheobase=Rheobase;
+            Ephys(adder).Passive=Passive;
+            Ephys(adder).Sag=Sag;
+            Ephys(adder).Ramp=Ramp;
+            adder=adder+1; 
             else isempty(idx_intr)==0;
                 
              [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder); 
@@ -159,10 +170,10 @@ adder=1;%counting variable
        end
        %% Image L6 pial depth read out
        if image_prop==1;
-       [pial_depth dis xi yi] = img_prop(list,exp_folder);
-       Ephys(adder).pial_depth=pial_depth;
-       Ephys(adder).xi=xi;
-       Ephys(adder).yi=yi;
+       [dis] = img_prop(list,exp_folder);
+%        Ephys(adder).pial_depth=pial_depth;
+%        Ephys(adder).xi=xi;
+%        Ephys(adder).yi=yi;
        Ephys(adder).dis=dis;
        adder=adder+1; 
        end
