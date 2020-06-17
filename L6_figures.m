@@ -6,6 +6,8 @@ folder_list = uipickfiles('FilterSpec',str_L6);
 load(char(folder_list));
 srF=20;
 sr=20000;
+%% 
+
 %% Intrinsic properties
 %% Read out overall max and min + label category for figure 
 step=2;
@@ -874,32 +876,73 @@ yticks([0:10:50]);
  for i=1:size(Ephys,2)
  sol(i)=Ephys(i).sol;
  end
-cs=find(sol==2);
+ %% 
+ cs1=[];cs2=[];
+ cs1=[Ephys(:).sol]==2 & [Ephys(:).label]==1;
+cs2=[Ephys(:).sol]==2 & [Ephys(:).label]==0;
+cs_r=find(cs1==1);
+cs_nr=find(cs2==1);
 %% 
-fig5=figure;set(fig5, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
-plot(Ephys(cs(3)).sub_traces_train(1:100000,1),'Color','r','LineWidth',1);set(gca,'box','off');axis off;
-hold on;plot(Ephys(cs(3)).sub_traces_train(1:100000,2)+20,'Color','b','LineWidth',1);set(gca,'box','off');axis off;
+a=cs_r;
+cn=8;
+fig5=figure;set(fig5, 'Position', [200, 800, 200, 200]);set(gcf,'color','w');
+plot(Ephys(a(cn)).sub_traces_train(2000:10000,1),'Color','r','LineWidth',1);set(gca,'box','off');%axis off;
+hold on;plot(Ephys(a(cn)).sub_traces_train(2000:10000,2)+20,'Color','b','LineWidth',1);set(gca,'box','off');%axis off;
 hold on;
 freq=1;
 co=[0:1:5-1];
-duration=20000;
+duration=2000;
 pulsedur=1000;
-delay=5000;
-  for h=1:5
-  x1=delay+duration/freq*co(h);
-  x2=(delay+pulsedur)+duration/freq*co(h);
-  p1=plot([x1 x2],[abs(max(Ephys(11).sub_traces_train(:,2)))*10 abs(max(Ephys(11).sub_traces_train(:,2)))*10],'-','Color','b','LineWidth',2);
-  hold on;
-  end
+delay=3000;
+%   for h=1:5
+   x1=delay;
+   x2=delay+duration
+   plot([x1 x2],[max(Ephys(a(cn)).sub_traces_train(1:10000,2)*1.5) max(Ephys(a(cn)).sub_traces_train(1:10000,2)*1.5)],'-','Color','b','LineWidth',0.5)
+hold on;plot([x1 x1],[0 max(Ephys(a(cn)).sub_traces_train(1:10000,2)*1.5)],'--k','LineWidth',0.1);
+   %   x2=(delay+pulsedur)+duration/freq*co(h);
+%   p1=plot([x1 x2],[abs(max(Ephys(11).sub_traces_train(:,2)))*10 abs(max(Ephys(11).sub_traces_train(:,2)))*10],'-','Color','b','LineWidth',2);
+%   hold on;
+%   end
 %hold on;text(-550*srF,Ephys(7).IV.RMP,[num2str(rmp(7)),'mV'],'FontSize',9);
 
+%% E/I ratio
+for i=1:length(cs_r)
+   if size(Ephys(cs_r(i)).train_n,2)==2
+e_i(i)=abs(Ephys(cs_r(i)).train_n(1,1))/Ephys(cs_r(i)).train_p(1,2)
+   else
+       e_i(i)=NaN;
+   end
+    
+end
+%% Area under the curve
+for i=1:length(cs_r)
+    if size(Ephys(cs_r(i)).train_n,2)==2
+        bs_std_ex=3*std(Ephys(cs_r(i)).sub_traces_train(3000:5000,1));
+        peak_r_ex=max(abs(Ephys(cs_r(i)).sub_traces_train(5000:7000,1)));
+       
+        bs_std_in=3*std(Ephys(cs_r(i)).sub_traces_train(3000:5000,2));
+        peak_r_in=max(abs(Ephys(cs_r(i)).sub_traces_train(5000:7000,2)));
+       
+        if peak_r_ex>bs_std_ex  & peak_r_in>bs_std_in 
+        Yex=Ephys(cs_r(i)).sub_traces_train(5000:20000,1);
+        Yin=Ephys(cs_r(i)).sub_traces_train(5000:20000,2);
+        temp=trapz(Yex)/trapz(Yin);
+        else
+           temp=NaN;
+        end
+    else
+        temp=NaN;
+    end  
+e_i_tr(i)=abs(temp);
+    
+    
+end
 %% 
- %% Look at Cs-gluc
- for i=1:size(Ephys,2)
- tmp(i)=Ephys(i).wc;
- end
-wc=find(tmp==0);
-
+figure;set(gcf,'color','w');h1=histogram(e_i(2:end),5,'Normalization','probability');hold on;h2=histogram(e_i_tr(2:end),5,'Normalization','probability')
+h1.FaceColor='w';h1.BinWidth= 0.3200
+h2.FaceColor=[0.5 0.5 0.5];box off;xlabel('E / I Ratio');legend({'Peak based','Area based'});legend boxoff
+h2.BinWidth= 0.3200;
+hold on;plot([1 1],[0 0.6],'--k');ylabel('Fraction of cells (%)');yticks([0:0.2:0.6]);yticklabels({'0','20','40','60'});set(gca,'FontSize',10);
 %% 
 
 %                         dt = 1e-4;
@@ -908,8 +951,7 @@ wc=find(tmp==0);
 %                         traces_analysis=trace(trace_curr,dt, dy, 'Analysis', props);
 %                         alltrace_info = getProfileAllSpikes(traces_analysis);
 %                         parameters=alltrace_info.spikes_db.data; 
-%% 
-
+%% Hstogram
 subplot(2,1,2);
 ov_min=min(min(squarepulse));
 plot(squarepulse,'Color',[0.7 0.7 0.7],'LineWidth',1);set(gca,'box','off');axis off;xlim([-260*srF length(traces_deconc)]);
@@ -920,7 +962,50 @@ scale_y= 100;
 hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
 %scale bary
 hold on;y2= ov_min+scale_y;y1=ov_min;p1=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+%% Reading out time to peak EX
+close all;
+for i=1:11
+time_tpex(i)=time_to_peak(Ephys(cs_r(i)).sub_traces_train(:,1),[3000:30:5000],[5000:30:6000],20,0);
+end
 
+%% Reading out time to peak IN
+close all;
+for i=1:11
+     if size(Ephys(cs_r(i)).train_n,2)==2
+time_tpin(i)=time_to_peak(Ephys(cs_r(i)).sub_traces_train(:,2),[3000:30:5000],[5000:30:6000],20,1);
+     else
+      time_tpin(i)=NaN;
+     end
+end
+%% 
+
+time_tp=vertcat(time_tpex(2:end)',time_tpin([2 3 4 5 6 7 8 9 10 11])')
+par=time_tp;
+
+g1=1:10
+g2=11:20;
+[statsout]=dual_barplot(par,g1,g2,2);xticks([1:1:2]);
+ylabel('Latency (ms)')
+xticklabels({'EX','IN'});set(gca,'FontSize',10);
+%% PaIRED COMPARISON
+time_tp=[]
+time_tp=[time_tpex' time_tpin']*1.5
+time_tp(find(sum(isnan(time_tp),2)~=0),:)=[]
+fig3= figure;set(fig3, 'Name', 'Latency');set(fig3, 'Position', [200, 300, 100, 200]);set(gcf,'color','w');
+%Plotting AMPA peak input DE vs NDE using plotspread and boxplot
+
+hold on;
+for i=1:length(time_tp)
+     p1=plot([1,2],[time_tp(:,1),time_tp(:,2)],'color',[0.5 0.5 0.5]);
+     
+end
+
+hold on;pS=plotSpread([time_tp(:,1),time_tp(:,2)],'categoryIdx',[ones(1,length(time_tp(:,1)))' ones(1,length(time_tp(:,2)))'*2],...
+    'categoryMarkers',{'o','o'},'categoryColors',{'r','b'});hold on;
+hold on;plot([1,2],[nanmedian(time_tp(:,1)),nanmedian(time_tp(:,2))],'k','LineWidth',3);
+box off;xticklabels({'EX','IN'});ylabel('Latency (ms)');yticks([0:5:25]);set(gca,'FontSize',10);
+%set(gca, 'YScale', 'log')
+[p1]=signrank(time_tp(:,1) ,time_tp(:,2));title([' p=' num2str(p1) ', n=' num2str(length(time_tp))]);
 
 %% LED plotting
 
