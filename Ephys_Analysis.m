@@ -17,9 +17,9 @@ savefile=1;
 
 %% Set directories and experimentator
 experimentator= 'SW';
-rdata_dir         = 'C:\Users\Simon-localadmin\Documents\MargrieLab\MatlabCode\Electrophysiology\Ephys_slice';%data directory of raw data;change accordingly
-adata_dir         = 'C:\Users\Simon-localadmin\Documents\MargrieLab\MatlabCode\Electrophysiology\Ephys_slice\output_structure';%data directory of extracted date;change accordingly
-ExpXls            = 'C:\Users\Simon-localadmin\Documents\MargrieLab\Excel_exp_list\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
+rdata_dir         = 'C:\Users\slice setup\SimonW\RawData\Organized';%data directory of raw data;change accordingly
+adata_dir         = 'C:\Users\slice setup\Electrophysiology\output';%data directory of extracted date;change accordingly
+ExpXls            = 'C:\Users\slice setup\SimonW\RawData\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
 
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
@@ -49,7 +49,8 @@ adder=1;%counting variable
             
             intrlist={'IV','Passive','Rheobase','Passive','Sag','Ramp'};
             idx_intr=find(contains({list(:).name},intrlist)==1);
-            
+            %check which amplifier
+            ampli=batchopt.amplifier{i} (k);
             
               %setting up structure
             Ephys(adder).animal_name=[char(batchopt.mouseID{i})];
@@ -62,9 +63,10 @@ adder=1;%counting variable
             Ephys(adder).area=batchopt.brainarea{i} (k);
             Ephys(adder).wc=batchopt.wholecell{i} (k);
             Ephys(adder).sol=batchopt.solution{i} (k);
-            
-            
-             
+            Ephys(adder).amp=batchopt.amplifier{i} (k);
+            Ephys(adder).pair=batchopt.paired{i} (k);
+            Ephys(adder).distx=batchopt.distancex{i} (k);
+            Ephys(adder).disty=batchopt.distancey{i} (k);
             
         if LED_stim==1
             %Get LED stimuli of the cell
@@ -88,11 +90,11 @@ adder=1;%counting variable
                 
                 %call function ephys_LED
                 if contains(stimuli_type,'train')==1 || contains(stimuli_type,'square')==1   
-                [train_n(:,count1) train_p(:,count1) dpeak_n(:,count1) dpeak_p(:,count1) sub_traces_train(:,count1)] = ephys_LED(filename,data,clamp);
+                [train_n(:,count1) train_p(:,count1) dpeak_n(:,count1) dpeak_p(:,count1) sub_traces_train(:,count1)] = ephys_LED(filename,data,clamp,ampli);
                 clamp_v(count1)=clamp;
                 count1=count1+1;
                 elseif contains(stimuli_type,'ladder')==1;
-                    [ladder_n(:,count2) ladder_p(:,count2)  dpeak_n_ladder(:,count2) dpeak_p_ladder(:,count2) sub_traces_ladder(:,count2)] = ephys_LED(filename,data,clamp);
+                    [ladder_n(:,count2) ladder_p(:,count2)  dpeak_n_ladder(:,count2) dpeak_p_ladder(:,count2) sub_traces_ladder(:,count2)] = ephys_LED(filename,data,clamp,ampli);
                 clamp_v(count2)=clamp;
                     count2=count2+1;
                 else

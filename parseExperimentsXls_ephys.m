@@ -19,6 +19,10 @@ loaddrivecol  = find(~cellfun(@isempty, strfind(xls_txt(1,:),'loaddrive')));
 area=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Cortexarea')));
 wc=find(~cellfun(@isempty, strfind(xls_txt(1,:),'WC')));
 sol=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Solution')));
+amp=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Amplifier')));
+pair=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Pair')));
+disx=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistX')));
+disy=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistY')));
 
 k = 1;
 
@@ -49,7 +53,10 @@ for i = 2:size(xls_txt,1)
     expcellids8{k}                = xls_txt(i,area);
     expcellids9{k}                = xls_txt(i,wc);
     expcellids10{k}                = xls_txt(i,sol);
-    
+    expcellids11{k}                = xls_txt(i,amp);
+    expcellids12{k}                = xls_txt(i,pair);
+    expcellids13{k}                = xls_txt(i,disx);
+    expcellids14{k}                = xls_txt(i,disy);
     
     batchopt.exp_ids{k}        = str2num((expcellids{k}{1}));
     batchopt.injectH{k}        = (expcellids2{k}{1});
@@ -63,6 +70,10 @@ for i = 2:size(xls_txt,1)
     batchopt.brainarea{k}           = str2num((expcellids8{k}{1}));
     batchopt.wholecell{k}           = str2num((expcellids9{k}{1}));
     batchopt.solution{k}           = str2num((expcellids10{k}{1}));
+    batchopt.amplifier{k}           = str2num((expcellids11{k}{1}));
+    batchopt.paired{k}           = str2num((expcellids12{k}{1}));
+    batchopt.distancex{k}           = str2num((expcellids13{k}{1}));
+    batchopt.distancey{k}           = str2num((expcellids14{k}{1}));
     %batchopt.eye_inj_order{k}  = str2num((expcellids12{k}{1}));
     %     batchopt.spont_ids{k}          = str2num((spontcellids{k}{1}));
     %     batchopt.sftf_ids{k}          = str2num((sftfcellids{k}{1}));

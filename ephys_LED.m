@@ -1,4 +1,4 @@
-function [peak_n peak_p dpeak_n dpeak_p sub_traces] = ephys_LED(filename, data, clamp)
+function [peak_n peak_p dpeak_n dpeak_p sub_traces] = ephys_LED(filename, data, clamp,amplifier)
 
 fc=7;
 base_start=1;
@@ -7,10 +7,18 @@ resp_win=0.05%50 ms in s
 sr=data.header.StimulationSampleRate;
 if str2num(filename(end-4))==0
 temp=str2num(filename(end-3));
+if amplifier==1
 traces=data.(['sweep_000',num2str(temp)]).analogScans(:,1);
+else amplifier==2
+traces=data.(['sweep_000',num2str(temp)]).analogScans(:,2);
+end
 else
 temp=str2num([filename(end-4) filename(end-3)]);
+if amplifier==1
 traces=data.(['sweep_00',num2str(temp)]).analogScans(:,1);
+else amplifier==2
+traces=data.(['sweep_00',num2str(temp)]).analogScans(:,2);
+end
 end
 
 srF=sr/1000;               
