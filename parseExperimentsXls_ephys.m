@@ -9,7 +9,7 @@ datecol       = find(~cellfun(@isempty, strfind(xls_txt(1,:),'ExperimentalDay'))
 expcol         = find(~cellfun(@isempty, strfind(xls_txt(1,:),'CellID')));
 injecthem= find(~cellfun(@isempty, strfind(xls_txt(1,:),'InjectionH')));
 recordhem= find(~cellfun(@isempty, strfind(xls_txt(1,:),'RecordingH')));
-genotcol= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Genotype')));
+genotcol= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Line')));
 slicenr= find(~cellfun(@isempty, strfind(xls_txt(1,:),'SliceNr')));
 sagflag= find(~cellfun(@isempty, strfind(xls_txt(1,:),'SagFlag')));
 label= find(~cellfun(@isempty, strfind(xls_txt(1,:),'Label')));
@@ -40,7 +40,7 @@ for i = 2:size(xls_txt,1)
     batchopt.mouse{k}     = xls_num(i-1,datecol-1);
     batchopt.mouseID{k}   = xls_txt(i,animalname);
     batchopt.injection{k} = xls_txt(i,injectcol);
-    batchopt.genotype{k} = xls_txt(i,genotcol);
+    batchopt.line{k} = xls_txt(i,genotcol);
     %batchopt.eye_inj_order{k} = xls_num(i-1,eye_inj_order-1);
     
     expcellids{k}                = xls_txt(i,expcol);

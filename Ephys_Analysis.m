@@ -57,7 +57,7 @@ adder=1;%counting variable
             Ephys(adder).patching_date=batchopt.mouse{i};
             Ephys(adder).celID=fold_name;
             Ephys(adder).slice=batchopt.slicen{i} (k);
-            
+            Ephys(adder).geno=batchopt.geno{i} (k);
             Ephys(adder).sag=batchopt.sag{i} (k);
             Ephys(adder).label=batchopt.labelcell{i} (k);
             Ephys(adder).area=batchopt.brainarea{i} (k);
