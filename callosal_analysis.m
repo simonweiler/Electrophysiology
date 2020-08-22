@@ -25,6 +25,31 @@ pv_k = cell_selecter(Ephys, 'label',3, 'sol',1,'geno',5);
 retro_cs_pv = cell_selecter(Ephys, 'label',1, 'sol',2,'geno',5);
 %PV mouse line, Cs-gluc, ntsr1+ cells
 pv_cs = cell_selecter(Ephys, 'label',3, 'sol',2,'geno',5);
+%% use filter for all retro cells with K-gluc
+rk = cell_selecter(Ephys, 'label',1, 'sol',1);
+%% use filter for all Interneuorns with K-gluc
+gadk = cell_selecter(Ephys, 'label',[2], 'sol',1);
+%% 
+nlk = cell_selecter(Ephys, 'label',[0], 'sol',1);
+%% 100% retro are ntrs-
+fig3= figure;set(fig3, 'Name', 'Paired comp');set(fig3, 'Position', [200, 300, 250, 200]);set(gcf,'color','w');
+fdat=[100 0];
+b=bar([1 2],fdat);ylabel('Fraction CPN (%)');xticklabels({'Ntsr1(-)', 'Ntsr1(+)'});box off;
+b.FaceColor=[0.5 0.5 0.5];set(gca,'FontSize',10);
+%% Plot IV for all retro cells
+plot_intrinsic(Ephys,rk,8,srF,'k',1);
+%% Plot IV for all GAD+ cells
+plot_intrinsic(Ephys,gadk,6,srF,'m',1);
+%% Plot IV for all PV+ cells
+plot_intrinsic(Ephys,pv_k,2,srF,'m',1);
+%% Plot IV for all Ntsr1+ cells
+plot_intrinsic(Ephys,ntsr_k,4,srF,'r',1);
+%% Plot Rheobase 1x and 2x for all Ntsr1+ cells
+[F2xRheo]=plot_intrinsic(Ephys,ntsr_k,4,srF,'k',2);
+%% Plot Rheobase 1x and 2x for all retro+ cells
+[F2xRheo_rk]=plot_intrinsic(Ephys,rk,8,srF,'m',2);
+%% Plot Rheobase 1x and 2x for all nonlabelled cells
+plot_intrinsic(Ephys,nlk,5,srF,'m',2);
 %% Instrinisc properties Ntsr1 vs retro
 %extract info from IV trace and passive, extract Rheobase traces where at
 %least 2 spikes are present
