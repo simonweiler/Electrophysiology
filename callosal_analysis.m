@@ -47,9 +47,12 @@ plot_intrinsic(Ephys,ntsr_k,4,srF,'r',1);
 %% Plot Rheobase 1x and 2x for all Ntsr1+ cells
 [F2xRheo]=plot_intrinsic(Ephys,ntsr_k,4,srF,'k',2);
 %% Plot Rheobase 1x and 2x for all retro+ cells
-[F2xRheo_rk]=plot_intrinsic(Ephys,rk,8,srF,'m',2);
+[F2xRheo_rk]=plot_intrinsic(Ephys,retro_k,4,srF,'m',2);
 %% Plot Rheobase 1x and 2x for all nonlabelled cells
 plot_intrinsic(Ephys,nlk,5,srF,'m',2);
+%% 
+tim_1=[F2xRheo_rk' F2xRheo'];
+
 %% Instrinisc properties Ntsr1 vs retro
 %extract info from IV trace and passive, extract Rheobase traces where at
 %least 2 spikes are present
@@ -171,6 +174,9 @@ paired_plot(maxsp_1,0);xticklabels({'CPN','NtsR1'});ylabel('Max spike number');y
 paired_plot(rheo_1,1);xticklabels({'CPN','NtsR1'});ylabel('Rheobase (pA)');yticks([0:50:200]);set(gca,'FontSize',10);
 %Sag Ratio
 paired_plot(sag_1,1);xticklabels({'CPN','NtsR1'});ylabel('Sag Ratio');set(gca,'FontSize',10);
+%% Pired timing of first two spikes
+
+paired_plot(tim_1,1);xticklabels({'CPN','NtsR1'});ylabel('initial spikes');set(gca,'FontSize',10);
 %% Plotting paired using the second spike always (if possible) 
 close all;
 paired_subplot(active_retro([1 2 3 4 5 6 7 8 10 11 12 14 15],:),active_ntsr([1 2 3 4 5 6 7 8 10 11 12 14 15],:),1)

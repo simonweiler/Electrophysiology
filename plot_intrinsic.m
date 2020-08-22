@@ -49,37 +49,50 @@ for  i=1:length(find(idx==1))
     temp=find(idx==1);
     if isempty(data(temp(i)).Rheobase)==0;
         %find Rheobase 
-        rheo(i)=data(temp(i)).Rheobase.rheo;
-        idx_1xRheo(i)=find(data(temp(i)).Rheobase.stimvec==1*data(temp(i)).Rheobase.rheo);
-        trace_1xRheo(:,i)=data(temp(i)).Rheobase.traces(:,idx_1xRheo(i));
-         if isempty(find(data(temp(i)).Rheobase.spikecount>=2))==0
-    md=find(data(temp(i)).Rheobase.spikecount>=2);
-    trace_2ap(:,i)=data(temp(i)).Rheobase.traces(:,md(1));
+      
+        %idx_1xRheo(i)=find(data(temp(i)).Rheobase.stimvec==1*data(temp(i)).Rheobase.rheo);
+        sp1=find(data(temp(i)).IV.spikecount>=1);
+        tmp=find(sp1>7)
+       rheo(i)=data(temp(i)).IV.stimvec(sp1(tmp(1)))
+       
+        idx_1xRheo(i)=find(data(temp(i)).IV.stimvec==data(temp(i)).IV.stimvec(sp1(tmp(1))));
+        trace_1xRheo(:,i)=data(temp(i)).IV.traces(:,idx_1xRheo(i));
+         if isempty(find(data(temp(i)).IV.spikecount>=2))==0
+    md=find(data(temp(i)).IV.spikecount>=2);
+    trace_2ap(:,i)=data(temp(i)).IV.traces(:,md(1));
    else
-      md=find(data(temp(i)).Rheobase.spikecount>=1);
-    trace_2ap(:,i)=data(temp(i)).Rheobase.traces(:,md(1));
+      md=find(data(temp(i)).IV.spikecount>=1);
+    trace_2ap(:,i)=data(temp(i)).IV.traces(:,md(1));
    end
-        trace_1xRheo_2ap(:,i)=data(temp(i)).Rheobase.traces(:,idx_1xRheo(i)+1);
-        sp_time_1x=spike_times(trace_1xRheo(:,i),0.1);
-        if idx_1xRheo(i)<9
-       % idx_2xRheo(i)=find(data(temp(i)).Rheobase.stimvec==data(temp(i)).Rheobase.rheo(end));
-       idx_2xRheo(i)=16;
+        %trace_1xRheo_2ap(:,i)=data(temp(i)).Rheobase.traces(:,idx_1xRheo(i)+1);
+        diff_idx=find(diff(find(diff(trace_1xRheo(:,i))>0.5))>1);
+        dif_tr=diff(find(diff(trace_1xRheo(:,i))>0.5));
+        sp_time_1x=[];
+        sp_time_1x=dif_tr(diff_idx);
+        if idx_1xRheo(i)<=11
+        idx_2xRheo(i)=find(data(temp(i)).IV.stimvec==round(2*rheo(i),2,'significant'));
+       %idx_2xRheo(i)=19;
         else
-        %idx_2xRheo(i)=find(data(temp(i)).Rheobase.stimvec==data(temp(i)).Rheobase.stimvec(end));  
-        idx_2xRheo(i)=16;
+        idx_2xRheo(i)=find(data(temp(i)).IV.stimvec==data(temp(i)).IV.stimvec(end));  
+       % idx_2xRheo(i)=19;
         end
-        trace_2xRheo(:,i)=data(temp(i)).Rheobase.traces(:,idx_2xRheo(i));
+        trace_2xRheo(:,i)=data(temp(i)).IV.traces(:,idx_2xRheo(i));
     else
         rheo(i)=NaN;
         idx_1xRheo(i)=NaN;
-        trace_2ap(:,i)=ones(length(data(temp(1)).Rheobase.traces),1)*NaN;
-        trace_2xRheo(:,i)=ones(length(data(temp(1)).Rheobase.traces),1)*NaN;
+        trace_2ap(:,i)=ones(length(data(temp(1)).IV.traces),1)*NaN;
+        trace_2xRheo(:,i)=ones(length(data(temp(1)).IV.traces),1)*NaN;
     end
-    sp_time_2x=spike_times(trace_2xRheo(:,i),0.1);
+    sp_time_2x=[];
+    diff_idx=[];
+    diff_tr=[];
+   diff_idx=find(diff(find(diff(trace_2xRheo(:,i))>0.5))>1);
+   dif_tr=diff(find(diff(trace_2xRheo(:,i))>0.5));
+    sp_time_2x=dif_tr(diff_idx);
     try
-    F2xRheo(:,i)=1/((sp_time_2x(2)-sp_time_2x(1))/sr);
+    F2xRheo(:,i)=1/((sp_time_2x(1))/sr);
     catch
-    F2xRheo(:,i)=0;
+    F2xRheo(:,i)=NaN;
     end
 end 
 fig1=figure;set(fig1, 'Position', [200, -200, 800, 800]);set(gcf,'color','w');
