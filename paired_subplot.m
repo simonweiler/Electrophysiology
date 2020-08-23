@@ -1,7 +1,7 @@
-function paired_subplot(par1,par2,test_u)
+function stats=paired_subplot(par1,par2,test_u)
 
 str={'V_{min}(mV)','V_{peak}(mV)','V_{init}(mV)','V_{thresh}(mV)', 'Vslope_{max} (\DeltamV/\Deltams)','V_{half} (mV)','Spike_{amplitude} (mV)',...
-    'AHP_{max}(mV)', 'Spike init (ms)','Spike_{rise} (ms)', 'Spike_{fall} (ms)','Spike_{base width} (ms)','Spike_{half width} (ms)'};
+    'AHP_{max}(mV)', 'Spike init (ms)','Spike_{rise} (ms)','Spike_{base width} (ms)','Spike_{half width} (ms)'};
 xlab=({'CPN','NtsR1'});
 
 fig3= figure;set(fig3, 'Name', 'Paired comp');set(fig3, 'Position', [200, 300, 800, 800]);set(gcf,'color','w');
@@ -21,9 +21,11 @@ hold on;plot([1,2],[nanmedian(data(:,1)),nanmedian(data(:,2))],'k','LineWidth',3
 box off;set(gca,'FontSize',10);
 hold on;ylabel(str{i});xticklabels(xlab)
 if test_u==0
-[p1]=signrank(data(:,1) ,data(:,2));title([' p=' num2str(p1) ', n=' num2str(length(data))],'FontWeight','Normal');
+p1=signrank(data(:,1) ,data(:,2));title([' p=' num2str(p1) ', n=' num2str(length(data))],'FontWeight','Normal');
+stats(i)=p1;
 else
- [p1]=ranksum(data(:,1) ,data(:,2));title([' p=' num2str(p1) ', n=' num2str(length(data))],'FontWeight','Normal');
+ p1=ranksum(data(:,1) ,data(:,2));title([' p=' num2str(p1) ', n=' num2str(length(data))],'FontWeight','Normal');
+ stats(i)=p1;
 end
 end
 end

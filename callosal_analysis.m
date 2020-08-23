@@ -50,9 +50,8 @@ plot_intrinsic(Ephys,ntsr_k,4,srF,'r',1);
 [F2xRheo_rk]=plot_intrinsic(Ephys,retro_k,4,srF,'m',2);
 %% Plot Rheobase 1x and 2x for all nonlabelled cells
 plot_intrinsic(Ephys,nlk,5,srF,'m',2);
-%% 
+%% Time fraction between first two spiked
 tim_1=[F2xRheo_rk' F2xRheo'];
-
 %% Instrinisc properties Ntsr1 vs retro
 %extract info from IV trace and passive, extract Rheobase traces where at
 %least 2 spikes are present
@@ -109,77 +108,37 @@ rin_1=[rin_retro' rin_ntsr'];
 tau_1=[tau_retro' tau_ntsr'];
 sag_1=[sag_retro' sag_ntsr'];
 %% Reading out further active spike properties using Pandora
-%Parameters are:
-% %%%%[ 1]    'MinVm'        
-%     [ 2]    'PeakVm'       
-%     [ 3]    'InitVm'       
-%     [ 4]    'InitVmBySlope'
-%     [ 5]    'MaxVmSlope'   
-%     [ 6]    'HalfVm'       
-%     [ 7]    'Amplitude'    
-%     [ 8]    'MaxAHP'       
-%     [ 9]    'DAHPMag'      
-%     [10]    'InitTime'     
-%     [11]    'RiseTime'     
-%     [12]    'FallTime'     
-%     [13]    'MinTime'      
-%     [14]    'BaseWidth'    
-%     [15]    'HalfWidth'    
-%     [16]    'FixVWidth'    
-%     [17]    'Index'        
-%     [18]    'Time'
-%Pandora parameters
-sp=2;
-temp=[];
-for i=1:length(find(retro_k==1));
-trace_curr=trace_retro(:,i);
-dt = 1e-4;dy = 1e-3;
-props = struct('spike_finder', 2, 'threshold', 0);
-traces_analysis=trace(trace_curr,dt, dy, 'Analysis', props);
-alltrace_info = getProfileAllSpikes(traces_analysis);
-parameters=[];
-parameters=alltrace_info.spikes_db.data; 
-try
-active_ntsr(:,i)=parameters(sp,:);
-catch
-active_ntsr(:,i)=parameters(1,:);
-end;
-end
-temp=[];
-for i=1:length(find(ntsr_k==1));
-trace_curr=trace_ntsr(:,i);
-dt = 1e-4;dy = 1e-3;
-props = struct('spike_finder', 2, 'threshold', 0);
-traces_analysis=trace(trace_curr,dt, dy, 'Analysis', props);
-alltrace_info = getProfileAllSpikes(traces_analysis);
-parameters=[];
-parameters=alltrace_info.spikes_db.data;
-try
-active_ntsr(:,i)=parameters(sp,:);
-catch
-active_ntsr(:,i)=parameters(1,:);
-end
-end
+active_ntsr=sp_parameters_pandora(trace_ntsr,2);
+active_retro=sp_parameters_pandora(trace_retro,2);
 %% Test rmp, etc
 close all;
 %RMP
-paired_plot(rmp_1,0);xticklabels({'CPN','NtsR1'});ylabel('RMP (mV)');yticks([-80:5:-60]);set(gca,'FontSize',10);
+p1=paired_plot(rmp_1,0);xticklabels({'CPN','NtsR1'});ylabel('RMP (mV)');yticks([-80:5:-60]);set(gca,'FontSize',10);
 %Input resistance Rin
-paired_plot(rin_1,0);xticklabels({'CPN','NtsR1'});ylabel('Input resistance (mhm)');set(gca,'FontSize',10);
+p2=paired_plot(rin_1,0);xticklabels({'CPN','NtsR1'});ylabel('Input resistance (mOhm)');set(gca,'FontSize',10);
 %Tau 
-paired_plot(tau_1,0);xticklabels({'CPN','NtsR1'});ylabel('Tau (ms)');set(gca,'FontSize',10);
+p3=paired_plot(tau_1,0);xticklabels({'CPN','NtsR1'});ylabel('Tau (ms)');set(gca,'FontSize',10);
 %Maximum spike rate
-paired_plot(maxsp_1,0);xticklabels({'CPN','NtsR1'});ylabel('Max spike number');yticks([0:5:30]);set(gca,'FontSize',10);
+p4=paired_plot(maxsp_1,0);xticklabels({'CPN','NtsR1'});ylabel('Max spike number');yticks([0:5:30]);set(gca,'FontSize',10);
 %Rheobase
-paired_plot(rheo_1,1);xticklabels({'CPN','NtsR1'});ylabel('Rheobase (pA)');yticks([0:50:200]);set(gca,'FontSize',10);
+p5=paired_plot(rheo_1,1);xticklabels({'CPN','NtsR1'});ylabel('Rheobase (pA)');yticks([0:50:200]);set(gca,'FontSize',10);
 %Sag Ratio
-paired_plot(sag_1,1);xticklabels({'CPN','NtsR1'});ylabel('Sag Ratio');set(gca,'FontSize',10);
-%% Pired timing of first two spikes
-
-paired_plot(tim_1,1);xticklabels({'CPN','NtsR1'});ylabel('initial spikes');set(gca,'FontSize',10);
+p6=paired_plot(sag_1,1);xticklabels({'CPN','NtsR1'});ylabel('Sag Ratio');set(gca,'FontSize',10);
+%% Paired timing of first two spikes
+p7=paired_plot(tim_1,1);xticklabels({'CPN','NtsR1'});ylabel('initial spikes');set(gca,'FontSize',10);
 %% Plotting paired using the second spike always (if possible) 
 close all;
-paired_subplot(active_retro([1 2 3 4 5 6 7 8 10 11 12 14 15],:),active_ntsr([1 2 3 4 5 6 7 8 10 11 12 14 15],:),1)
+p_val=paired_subplot(active_retro([1 2 3 4 5 6 7 8 10 11 14 15],:),active_ntsr([1 2 3 4 5 6 7 8 10 11 14 15],:),1);
+%% plot imagsec from pvalues
+p_all=horzcat(p1,p2,p3,p4,p5,p6,p_val)
+fig3= figure;set(fig3, 'Name', '');set(fig3, 'Position', [200, 300, 600, 120]);set(gcf,'color','w');
+str={'RMP','Rin','Tau','max nr spk','Rheo','Sag','V_{min}','V_{peak}','V_{init}','V_{thresh}', 'Vslope_{max}','V_{half}','Spike_{amplitude}',...
+    'AHP_{max}', 'Spike init','Spike_{rise}','Spike_{base width}','Spike_{half width}'};
+p_all(find(p_all>0.05))=1;
+imagesc(p_all);
+xticks([1:18])
+xticklabels(str);
+yticklabels({''});xtickangle(45);[cmap]=buildcmap('mw');colormap(cmap);colorbar
 %% Input CPN vs Ntsr1
 temp=[];
 for i=1:length(find(retro_cs==1));
@@ -215,7 +174,18 @@ paired_plot(epsc_1,0);xticklabels({'CPN','NtsR1'});ylabel('EPSC peak (pA)');set(
 paired_plot(ipsc_1,0);xticklabels({'CPN','NtsR1'});ylabel('IPSC peak (pA)');set(gca,'FontSize',10);
 %E_I
 paired_plot(e_i_1,0);xticklabels({'CPN','NtsR1'});ylabel('E / I Ratio');set(gca,'FontSize',10);
-%% 
+%% Read out epsp retro vs NtsR1
+
+temp=[];
+for i=1:length(find(retro_k==1));
+    temp=find(retro_k==1);
+    retro_epsp(i)=max(abs(Ephys(temp(i)).train_p(1,:)));   
+end
+temp=[];
+for i=1:length(find(ntsr_k==1));
+    temp=find(ntsr_k==1);
+    ntsr_epsp(i)=max(abs(Ephys(temp(i)).train_p(1,:)));
+end
 
 
 
