@@ -240,7 +240,7 @@ for i=1:size(Ephys,2)
     end
 end
 %% 
-fig1=figure;set(fig1, 'Position', [200, -200, 1400, 1000]);set(gcf,'color','w');
+fig1=figure;set(fig1, 'Position', [200, -200, 800, 800]);set(gcf,'color','w');
 hold on;
 for i=1:size(Ephys,2)
     subplot(10,11,i);
