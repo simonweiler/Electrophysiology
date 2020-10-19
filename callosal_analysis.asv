@@ -38,12 +38,7 @@ nlk = cell_selecter(Ephys, 'label',[0], 'sol',1);
 fig3= figure;set(fig3, 'Name', 'Paired comp');set(fig3, 'Position', [200, 300, 250, 200]);set(gcf,'color','w');
 fdat=[100 0];
 b=bar([1 2],fdat);ylabel('Fraction CPN (%)');xticklabels({'Ntsr1(-)', 'Ntsr1(+)'});box off;
-b.FaceColor=[0.5 0.5 0.5];set(gca,'FontSize',12);xtickangle(45)
-%% 100% retro are GAD-
-fig3= figure;set(fig3, 'Name', 'Paired comp');set(fig3, 'Position', [200, 300, 250, 200]);set(gcf,'color','w');
-fdat=[100 0];
-b=bar([1 2],fdat);ylabel('Fraction CPN (%)');xticklabels({'GAD(-)', 'GAD(+)'});box off;
-b.FaceColor=[0.5 0.5 0.5];set(gca,'FontSize',12);xtickangle(45)
+b.FaceColor=[0.5 0.5 0.5];set(gca,'FontSize',10);
 %% Plot IV for all retro cells
 plot_intrinsic(Ephys,rk,8,srF,'k',1);
 %% Plot IV for all GAD+ cells
@@ -80,7 +75,8 @@ for i=1:size(rk_all,1)
     title(str{i});ylim([0 60]);hold on;
     plot(nanmedian(rk_all(i,:)),55,'kv');
 end
-
+%% reorder rk_all
+rk_all=rk_all';
 %% Plot spike diff waveform as imagesc
 fig9=figure;set(fig9, 'Position', [200, 200, 800, 800]);set(gcf,'color','w');
 for i=1:size(rk_all,2)
@@ -107,15 +103,10 @@ end
 plot_spike_freq(Ephys,rk);
 %% Perform PCA and dip test
 %remove NaNs
-% reorder rk_all
-rk_all=rk_all';
 rk_all(find(sum(isnan(rk_all),2)>0),:)=[];
-%% Run PCA
-[coeff,score,latent,~,explained,mu] = pca([zscore(rk_all)]);
-figure;bar(coeff(:,1),'k');set(gcf,'color','w');box off;ylabel('PC1 weight');xlabel('Feature number');set(gca,'FontSize',14);
+%% Run dip test
 
-%% Run dipt test
-dip_test_SW(rk_all,1,{'PC1','PC2','PC3'})
+dip_test_SW(rk_all,1,{'test'})
 
 
 

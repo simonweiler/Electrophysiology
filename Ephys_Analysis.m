@@ -17,9 +17,9 @@ savefile=1;
 
 %% Set directories and experimentator
 experimentator= 'SW';
-rdata_dir         = 'C:\Users\slice setup\SimonW\RawData\Organized';%data directory of raw data;change accordingly
-adata_dir         = 'C:\Users\slice setup\Electrophysiology\output';%data directory of extracted date;change accordingly
-ExpXls            = 'C:\Users\slice setup\SimonW\RawData\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
+rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
+adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
+ExpXls            = 'D:\Postdoc_Margrie\Projects\Callosal\experiment_list_slice\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
 
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
