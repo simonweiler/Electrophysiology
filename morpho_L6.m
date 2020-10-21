@@ -1,6 +1,11 @@
 function r=morpho_L6(morpho_folder,morpho_data,xf,yf,zf)
+clear all
+%morpho_folder='D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized\191206\SW0001\tracing\swc'
+%morpho_folder='W:\margrie\SimonWeiler\RawData\Ephys_slice\Organized\200116\SW0001\Tracing\swc'
+%morpho_folder='D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized\200310\SW0010\Tracing\swc'
+morpho_folder="D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized\200116\SW0001\Tracing\swc"
 
-morpho_folder='D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized\191206\SW0001\tracing\swc'
+
 %% LOAD
 list=dir([char(morpho_folder) '\*.swc']);
 len_br=length(list);
@@ -42,7 +47,7 @@ structure_map = zeros(size(dendr));
         %if it's the first iteration
         if fields == 2
             %concatenate the first 2 trees
-            result_tree = cat_tree(cat_fields(1),cat_fields(2));
+            result_tree = cat_tree(cat_fields(2),cat_fields(3));
         else
             %keep concatenating the fields
             result_tree = cat_tree(result_tree,cat_fields(fields));
@@ -55,7 +60,7 @@ structure_map = zeros(size(dendr));
     result_tree.name = 'All';
     
     %get the soma structure and subtract it from the rest
-    soma_struct = dendr(1,structure_map(1,:)==0); 
+    soma_struct = dendr(Index); 
     mx=mean(soma_struct.X);
     my=mean(soma_struct.Y);
     mz=mean(soma_struct.Z);
@@ -69,10 +74,15 @@ structure_map = zeros(size(dendr));
    somasub.Z=somasub.Z-mz;
    
  
-    figure;
-    scatter(result_tree.X,result_tree.Y,'.');
-    hold on;
-	scatter(somasub.X,somasub.Y,'.');
+%     figure;
+%     scatter(result_tree.X,result_tree.Y,'.');
+%     hold on;
+% 	scatter(somasub.X,somasub.Y,'.');
+%     
+%       figure;
+%     plot(result_tree.X,result_tree.Y);
+%     hold on;
+% 	plot(somasub.X,somasub.Y,'.');
     
     traces=result_tree;
     %save the resulting tree in a cell
@@ -84,6 +94,11 @@ euc=eucl_tree(traces); %euclidean distances of nodes to root [um]
 len=len_tree(traces);% vector containing length values of tree segments [um]
 path_len=Pvec_tree (traces, len);% path length from the root (µm)
 tr=repair_tree(traces);%get rid of trifurcations 
+
+
+%% Plot morphology
+figure;m=plot_tree(result_tree,[1 0 0],[0 0 0],[],1,'-b');hold on;m=plot_tree(somasub,[1 0 0],[0 0 0],[],1,'-b');hold on;box off;
+set(gcf,'color','w');
 %% 
     
 %%%%%%%%%%%%%
