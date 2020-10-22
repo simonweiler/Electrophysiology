@@ -71,7 +71,7 @@ tim_1=[F2xRheo_rk' F2xRheo'];
 %% Read out intrinsic properties for all retro cells with K-gluc across all mouse lines
 %extract info from IV trace and passive, extract Rheobase traces where at
 %least 2 spikes are present
-[rmp_rk maxsp_rk rheo_rk rin_rk tau_rk sag_rk trace_rk st_rk] = passive_readout(Ephys,rk)
+[rmp_rk maxsp_rk rheo_rk rin_rk tau_rk sag_rk trace_rk st_rk] = passive_readout(Ephys,rk);
 active_rk=sp_parameters_pandora(trace_rk,2);
 %% Plot histogram
 rk_all=vertcat(rmp_rk,rin_rk,tau_rk,maxsp_rk,rheo_rk,sag_rk,active_rk([1 2 3 4 5 6 7 8 10 11 14 15],:));
@@ -135,12 +135,12 @@ dip_test_SW(rk_all,1,{'PC1','PC2','PC3'})
 [rmp_retro maxsp_retro rheo_retro rin_retro tau_retro sag_retro trace_retro st_retro] = passive_readout(Ephys,retro_k);
 %ntsr
 [rmp_ntsr maxsp_ntsr rheo_ntsr rin_ntsr tau_ntsr sag_ntsr trace_ntsr st_ntsr] = passive_readout(Ephys,ntsr_k);
-rmp_1= [rmp_retro' rmp_ntsr'];
-maxsp_1=[maxsp_retro' maxsp_ntsr'];
-rheo_1=[rheo_retro' rheo_ntsr'];
-rin_1=[rin_retro' rin_ntsr'];
-tau_1=[tau_retro' tau_ntsr'];
-sag_1=[sag_retro' sag_ntsr'];
+rmp_1= [rmp_retro(1:12)' rmp_ntsr'];
+maxsp_1=[maxsp_retro(1:12)' maxsp_ntsr'];
+rheo_1=[rheo_retro(1:12)' rheo_ntsr'];
+rin_1=[rin_retro(1:12)' rin_ntsr'];
+tau_1=[tau_retro(1:12)' tau_ntsr'];
+sag_1=[sag_retro(1:12)' sag_ntsr'];
 %% Reading out further active spike properties using Pandora
 active_ntsr=sp_parameters_pandora(trace_ntsr,2);
 active_retro=sp_parameters_pandora(trace_retro,2);
@@ -172,17 +172,17 @@ axis off;
 %% Test rmp, etc
 close all;
 %RMP
-p1=paired_plot(rmp_1,0);xticklabels({'CPN','NtsR1'});ylabel('RMP (mV)');yticks([-80:5:-60]);set(gca,'FontSize',10);
+p1=paired_plot(rmp_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('RMP (mV)');yticks([-80:5:-60]);set(gca,'FontSize',10);
 %Input resistance Rin
-p2=paired_plot(rin_1,0);xticklabels({'CPN','NtsR1'});ylabel('Input resistance (mOhm)');set(gca,'FontSize',10);
+p2=paired_plot(rin_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('Input resistance (mOhm)');set(gca,'FontSize',10);
 %Tau 
-p3=paired_plot(tau_1,0);xticklabels({'CPN','NtsR1'});ylabel('Tau (ms)');set(gca,'FontSize',10);
+p3=paired_plot(tau_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('Tau (ms)');set(gca,'FontSize',10);
 %Maximum spike rate
-p4=paired_plot(maxsp_1,0);xticklabels({'CPN','NtsR1'});ylabel('Max spike number');yticks([0:5:30]);set(gca,'FontSize',10);
+p4=paired_plot(maxsp_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('Max spike number');yticks([0:5:30]);set(gca,'FontSize',10);
 %Rheobase
-p5=paired_plot(rheo_1,1);xticklabels({'CPN','NtsR1'});ylabel('Rheobase (pA)');yticks([0:50:200]);set(gca,'FontSize',10);
+p5=paired_plot(rheo_1,1,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('Rheobase (pA)');yticks([0:50:200]);set(gca,'FontSize',10);
 %Sag Ratio
-p6=paired_plot(sag_1,1);xticklabels({'CPN','NtsR1'});ylabel('Sag Ratio');set(gca,'FontSize',10);
+p6=paired_plot(sag_1,1,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('Sag Ratio');set(gca,'FontSize',10);
 %% Paired timing of first two spikes
 p7=paired_plot(tim_1,1);xticklabels({'CPN','NtsR1'});ylabel('initial spikes');set(gca,'FontSize',10);
 %% Plotting paired using the second spike always (if possible) 
@@ -227,7 +227,7 @@ e_i_retro=retro_epsc./retro_ipsc;
 e_i_ntsr=ntsr_epsc./ntsr_ipsc;
 e_i_1=[e_i_retro' e_i_ntsr'];
 %% Plot exampe epsc / ipsc of retro and NTSR1
-cnr=5;
+cnr=2;
 ov_min=-150;ov_max=800;
 temp=[];
 temp=find(retro_cs==1);
@@ -396,7 +396,7 @@ end
 %% read out fast spiking interneurons
 plot_intrinsic(Ephys,ink,7,srF,'m',1);
 %% 
-plot_intrinsic(Ephys,rk,9,srF,'m',1);
+plot_intrinsic(Ephys,rk,7,srF,'k',1);
 
 %% 
 idx_fs=[1 3 5 6 9 10 11 12 13 14 16 17 18 20 27 28 29 31 32 34 35 36 37 38];
