@@ -75,6 +75,8 @@ adder=1;%counting variable
             else isempty(idx_led)==0
                 count1=1;
                 count2=1;
+                count3=1;
+                count4=1;
                 for m=1:length(idx_led);  
                 filename=[char(exp_folder) '\' list(idx_led(m)).name];
                 %load file using loadDataFile_wavesurfer
@@ -97,6 +99,16 @@ adder=1;%counting variable
                     [ladder_n(:,count2) ladder_p(:,count2)  dpeak_n_ladder(:,count2) dpeak_p_ladder(:,count2) sub_traces_ladder(:,count2)] = ephys_LED(filename,data,clamp,ampli);
                 clamp_v(count2)=clamp;
                     count2=count2+1;
+                elseif contains(stimuli_type,'high')==1;
+                    if contains(stimuli_type,'high2')==1;
+                   [high_n(:,count3) high_p(:,count3) dpeak_n_high(:,count3) dpeak_p_high(:,count3) sub_traces_high(:,count3)] = ephys_LED(filename,data,clamp,ampli);
+                clamp_v(count3)=clamp;
+                    count3=count3+1;  
+                    else
+                     [highf_n(:,count3) highf_p(:,count3) dpeak_n_highf(:,count3) dpeak_p_highf(:,count3) sub_traces_highf(:,count3)] = ephys_LED(filename,data,clamp,ampli);
+                      clamp_v(count4)=clamp;
+                    count4=count4+1;     
+                    end
                 else
                     disp('fail');
                 end
@@ -123,14 +135,50 @@ adder=1;%counting variable
             end
            
             
+            if exist('high_n')==1;
+                Ephys(adder).high_n=high_n;
+                Ephys(adder).high_p=high_p;
+                Ephys(adder).sub_traces_high=sub_traces_high;
+            else
+                Ephys(adder).high_n=[];
+                Ephys(adder).high_p=[];
+                Ephys(adder).sub_traces_high=[];
+            end
+           
+              if exist('highf_n')==1;
+                Ephys(adder).highf_n=highf_n;
+                Ephys(adder).highf_p=highf_p;
+                Ephys(adder).sub_traces_highf=sub_traces_highf;
+            else
+                Ephys(adder).highf_n=[];
+                Ephys(adder).highf_p=[];
+                Ephys(adder).sub_traces_highf=[];
+            end
+            
              count1=[];
              count2=[];
+             count3=[];
+             count4=[];
              train_n=[];
              train_p=[];
+             dpeak_n=[];
+             dpeak_p=[];
              sub_traces_train=[];
              ladder_n=[];
              ladder_p=[];
+             dpeak_n_ladder=[];
+             dpeak_p_ladder=[];
              sub_traces_ladder=[];
+             high_n=[];
+             high_p=[];
+             dpeak_n_high=[];
+             dpeak_p_high=[];
+             sub_traces_high=[];
+             highf_n=[];
+             highf_p=[];
+             dpeak_n_highf=[];
+             dpeak_p_highf=[];
+             sub_traces_highf=[];
              
              if intr_prop==0;
                  adder=adder+1;

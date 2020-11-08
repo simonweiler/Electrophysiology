@@ -371,6 +371,20 @@ paired_plot(epsc_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('EPSC peak (pA)
 paired_plot(ipsc_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('IPSC peak (pA)');set(gca,'FontSize',10);
 %E_I
 paired_plot(e_i_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('E / I Ratio');set(gca,'FontSize',10);
+%% Plot all 5 iterations
+temp=[];
+for i=1:length(find(retro_cs_pv==1));
+    temp=find(retro_cs_pv==1);
+    retro_epsc_pv_5(:,i)=abs(Ephys(temp(i)).train_n(:,1));
+    retro_ipsc_pv_5(:,i)=abs(Ephys(temp(i)).train_p(:,2));
+end
+temp=[];
+for i=1:length(find(pv_cs==1));
+    temp=find(pv_cs==1);
+    pv_epsc_5(:,i)=abs(Ephys(temp(i)).train_n(:,1));
+    pv_ipsc_5(:,i)=abs(Ephys(temp(i)).train_p(:,2));
+end
+figure;plot(retro_epsc_pv_5,'-ok');hold on;plot(pv_epsc_5,'-om')
 %% Using all Interneurons with K
 temp=[];
 for i=1:length(find(ink==1));
@@ -408,10 +422,26 @@ rks_epsp=rk_epsp([idx_rks]);
 %% Read out ephys IN vs CPN
 [rmp_ink maxsp_ink rheo_ink rin_ink tau_ink sag_ink trace_ink st_ink] = passive_readout(Ephys,ink);
 [rmp_rk maxsp_rk rheo_rk rin_rk tau_rk sag_rk trace_rk st_rk] = passive_readout(Ephys,rk);
+%% Read out active intrinsic properties
+active_ink=sp_parameters_pandora(trace_ink,2);
+ink_all=vertcat(rmp_ink,rin_ink,tau_ink,maxsp_ink,rheo_ink,sag_ink,active_ink([1 2 3 4 5 6 7 8 10 11 14 15],:));
+fig9=figure;set(fig9, 'Position', [200, 200, 1400, 400]);set(gcf,'color','w');
+str={'RMP (mV)','R_{IN}(M\Omega)','Tau (ms)','Max Nr. Spikes','Rheobase (pA)','Sag ratio','V_{min} (mV)','V_{peak} (mV)','V_{init} (mV)','V_{thresh} (mV)', 'Vslope_{max} (mV)'...
+    ,'V_{half} (mV)','Spike_{amp} (mV)',... 'FaceColor','k'
+    'AHP_{max} (mV)', 'Spike init (ms)','Spike_{rise} (ms)','Spike_{base width} (ms)','Spike_{half width} (ms)'};
+for i=1:size(ink_all,1)
+    subplot(2,9,i)
+     histogram(ink_all(i,:),5,'FaceColor',[0.5 0.5 0.5]);box off;ylabel('Cells');
+     hold on;
+    title(str{i});ylim([0 60]);hold on;
+    plot(nanmedian(ink_all(i,:)),55,'kv');
+end
 %% Compare Rin between CPNs and all FS-IN
 par1=[];
 groups_idx=[];
-par1=vertcat(rin_rk(idx_rks)',rin_ink(idx_fs)')
+%par1=vertcat(rin_rk(idx_rks)'./tau_rk(idx_rks)',rin_ink(idx_fs)'./tau_ink(idx_fs)')
+%par1=vertcat(active_rk(3,idx_rks)',active_ink(3,idx_fs)')
+par1=vertcat(active_rk(3,idx_rks)',active_ink(3,idx_fs)')
 groups_idx=vertcat(ones(length(rin_rk(idx_rks)),1)*1,ones(length(rin_ink(idx_fs)),1)*2)
 groups_idx(find(isnan(par1)))=[];
 par1(find(isnan(par1)))=[];
