@@ -19,7 +19,7 @@ savefile=1;
 experimentator= 'SW';
 rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
 adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
-ExpXls            = 'D:\Postdoc_Margrie\Projects\Callosal\experiment_list_slice\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
+ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
 
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
@@ -105,7 +105,7 @@ adder=1;%counting variable
                 clamp_v(count3)=clamp;
                     count3=count3+1;  
                     else
-                     [highf_n(:,count3) highf_p(:,count3) dpeak_n_highf(:,count3) dpeak_p_highf(:,count3) sub_traces_highf(:,count3)] = ephys_LED(filename,data,clamp,ampli);
+                     [highf_n(:,count4) highf_p(:,count4) dpeak_n_highf(:,count4) dpeak_p_highf(:,count4) sub_traces_highf(:,count4)] = ephys_LED(filename,data,clamp,ampli);
                       clamp_v(count4)=clamp;
                     count4=count4+1;     
                     end
