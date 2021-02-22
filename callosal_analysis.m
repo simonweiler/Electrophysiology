@@ -16,17 +16,36 @@ ntsr_k = cell_selecter(Ephys, 'label',4, 'sol',1,'geno',6);
 retro_cs = cell_selecter(Ephys, 'label',1, 'sol',2,'geno',6);
 %Ntsr1 mouse line, Cs-gluc, ntsr1+ cells
 ntsr_cs = cell_selecter(Ephys, 'label',4, 'sol',2,'geno',6);
+%% 
 
 %PV mouse line, K-gluc, retro cells
 retro_k_pv = cell_selecter(Ephys, 'label',1, 'sol',1,'geno',5);
-%PV mouse line, K-gluc, ntsr1+ cells
+%PV mouse line, K-gluc, pv+ cells
 pv_k = cell_selecter(Ephys, 'label',3, 'sol',1,'geno',5);
 %PV mouse line, Cs-gluc, retro cells
 retro_cs_pv = cell_selecter(Ephys, 'label',1, 'sol',2,'geno',5);
-%PV mouse line, Cs-gluc, ntsr1+ cells
+%PV mouse line, Cs-gluc,PV+ cells
 pv_cs = cell_selecter(Ephys, 'label',3, 'sol',2,'geno',5);
+tb=[];ta=[];
+tb=find(retro_cs_pv==1);
+ta=find([Ephys(retro_cs_pv).pair]==0);
+tb(ta);
+retro_cs_pv(tb(ta))=0;
+
+% tb=[];ta=[];
+% tb=find(pv_k==1);
+% ta=find([Ephys(pv_k).pair]==0);
+% pv_k(tb(ta))=0;
+
+
+%% 
 % NtsR1 mouse line, K-gluc, non labelled
 non_ntsr=cell_selecter(Ephys, 'label',0, 'sol',1,'geno',6);
+% NtsR1 mouse line, K-gluc,  labelled but only paired with non ntsr
+% unlabbeled
+non_ntsr_lab=cell_selecter(Ephys, 'label',1, 'sol',1,'geno',6);
+ te=find(non_ntsr_lab==1);
+non_ntsr_lab(te(1:end-14))=0;
 %% 
 %% use filter for all retro cells with K-gluc
 rk = cell_selecter(Ephys, 'label',1, 'sol',1);
@@ -252,14 +271,40 @@ axis off;
  %scale barx
  hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
  %scale bary
- hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+ hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
+ %% 
+ cnr=4;
+%ov_min=-150;ov_max=30;
+temp=[];
+temp=find(retro_cs==1);
+fig4=figure;set(fig4, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
+subplot(1,2,1)
+plot(Ephys(temp(cnr)).sub_traces_train(:,1),'Color',[0 0.5 0.5],'LineWidth',1);set(gca,'box','off');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+hold on;title('CP');axis off;ylim([ov_min ov_max])
+
+subplot(1,2,2)
+temp=[];
+temp=find(ntsr_cs==1);
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color',[0.7 0 0.4],'LineWidth',1);set(gca,'box','off');
+title('CT','Color','k');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+axis off;ylim([ov_min ov_max])
+%Scale bar
+ scale_x= 200;
+ scale_y= 40;
+ %scale barx
+ hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
+ %scale bary
+ hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
 %% Plot EPSC and IPSC retro vs NtsR1
 %EPSC
-paired_plot(epsc_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
+%color_id={[0.7 0 0.4],[0 0.5 0.5]};
+paired_plot(epsc_1,0,{[0 0.5 0.5],[0.7 0 0.4]});xticklabels({'CP','CT'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
 %IPSC
-paired_plot(ipsc_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('IPSC peak (pA)');set(gca,'FontSize',10);
+paired_plot(ipsc_1,0,{[0 0.5 0.5],[0.7 0 0.4]});xticklabels({'CP','CT'});ylabel('IPSC peak (pA)');set(gca,'FontSize',10);
 %E_I
-paired_plot(e_i_1,0,{'k','r'});xticklabels({'CPN','NtsR1'});ylabel('E / I Ratio');set(gca,'FontSize',10);
+paired_plot(e_i_1,0,{[0 0.5 0.5],[0.7 0 0.4]});xticklabels({'CP','CT'});ylabel('E / I Ratio');set(gca,'FontSize',10);
 %% Read out epsp retro vs NtsR1
 temp=[];
 for i=1:length(find(retro_k==1));
@@ -349,6 +394,14 @@ for i=1:length(find(pv_cs==1));
     pv_epsc(i)=max(abs(Ephys(temp(i)).train_n(1,:)));
     pv_ipsc(i)=max(abs(Ephys(temp(i)).train_p(1,:)));
 end
+epsc_2=[[retro_epsc_pv]' [pv_epsc]'];
+ipsc_2=[retro_ipsc_pv' pv_ipsc'];
+e_i_retro_pv=retro_epsc_pv./retro_ipsc_pv;
+e_i_pv=pv_epsc./pv_ipsc;
+e_i_2=[e_i_retro_pv' e_i_pv'];
+
+%% 
+
 temp=[];
 for i=1:length(find(retro_k_pv==1));
     temp=find(retro_k_pv==1);
@@ -359,11 +412,6 @@ for i=1:length(find(pv_k==1));
     temp=find(pv_k==1);
     pv_epsc2(i)=max(abs(Ephys(temp(i)).train_n(1,:)));    
 end
-epsc_2=[[retro_epsc_pv retro_epsc2_pv]' [pv_epsc pv_epsc2]'];
-ipsc_2=[retro_ipsc_pv' pv_ipsc'];
-e_i_retro_pv=retro_epsc_pv./retro_ipsc_pv;
-e_i_pv=pv_epsc./pv_ipsc;
-e_i_2=[e_i_retro_pv' e_i_pv'];
 %% Plot EPSC and IPSC retro vs PV
 %EPSC
 paired_plot(epsc_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
@@ -483,13 +531,19 @@ groups_idx=vertcat(ones(length(fs_epsp),1)*1,ones(length(nfs_epsp),1)*2)
 groups_idx(find(isnan(par1)))=[];
 par1(find(isnan(par1)))=[];
 [statsout] = barplot_sw(par1,groups_idx,{'','EPSP peak (mV)'});xticklabels({'FS-GAD+','nonFS-GAD+'});xtickangle(45)
+
+%% 
+
+
+
+
 %% Plot CPN vs non labelled in  NTSR1 mice
 temp=[];
-for i=1:length(find(retro_k==1));
-    temp=find(retro_k==1);
+for i=1:length(find(non_ntsr_lab==1));
+    temp=find(non_ntsr_lab==1);
     retro_k_epsc_ntsr(i)=max(abs(Ephys(temp(i)).train_n(1,:)));    
 end
- retro_k_epsc_ntsr(1:end-8)=[];
+
  temp=[];
 for i=1:length(find(non_ntsr==1));
     temp=find(non_ntsr==1);
@@ -498,11 +552,11 @@ end
  non_ntsr_retro_c=[retro_k_epsc_ntsr' non_k_epsc_ntsr'];
  %% 
  temp=[];
-for i=1:length(find(retro_k==1));
-    temp=find(retro_k==1);
+for i=1:length(find(non_ntsr_lab==1));
+    temp=find(non_ntsr_lab==1);
     retro_k_epsp_ntsr(i)=max(abs(Ephys(temp(i)).train_p(1,:)));    
 end
- retro_k_epsp_ntsr(1:end-8)=[];
+
  temp=[];
 for i=1:length(find(non_ntsr==1));
     temp=find(non_ntsr==1);
@@ -511,26 +565,54 @@ end
  non_ntsr_retro_p=[retro_k_epsp_ntsr' non_k_epsp_ntsr'];
  
  %% 
- paired_plot(non_ntsr_retro_c,0,{'k',[0.5 0.5 0.5]});xticklabels({'CPN','NL'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
+ paired_plot(non_ntsr_retro_c,0,{[0 0.5 0.5],[0.5 0.5 0.5]});xticklabels({'CP','CC'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
  %% 
-  paired_plot(non_ntsr_retro_p,0,{'k',[0.5 0.5 0.5]});xticklabels({'CPN','NL'});ylabel('EPSP peak (mV)');set(gca,'FontSize',10);
+  paired_plot(non_ntsr_retro_p,0,{[0 0.5 0.5],[0.5 0.5 0.5]});xticklabels({'CP','CC'});ylabel('EPSP peak (mV)');set(gca,'FontSize',10);
  
+  %% plot exmaple CP vs CC
+  cnr=9;
+ov_min=-150;ov_max=30;
+temp=[];
+temp=find(non_ntsr_lab==1);
+fig4=figure;set(fig4, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
+subplot(1,2,1)
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color',[0 0.5 0.5],'LineWidth',1);set(gca,'box','off');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+hold on;title('CP');
+ylim([ov_min ov_max]);axis off
+
+subplot(1,2,2)
+temp=[];
+temp=find(non_ntsr==1);
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color',[0.5 0.5 0.5],'LineWidth',1);set(gca,'box','off');
+title('CC','Color','k');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+ylim([ov_min ov_max]);axis off
+%Scale bar
+ scale_x= 200;
+ scale_y= 40;
+ %scale barx
+ hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
+ %scale bary
+ hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+  
  %% 
  %% Plot IV for all non labelled cells
 plot_intrinsic(Ephys,non_ntsr,4,srF,[0.5 0.5 0.5],1);
+plot_intrinsic(Ephys,non_ntsr_lab,4,srF,[0.5 0.5 0.5],1);
  %% Instrinisc properties Ntsr1 vs retro in the Ntsr mouse line
 %retro
-[rmp_retro maxsp_retro rheo_retro rin_retro tau_retro sag_retro trace_retro st_retro] = passive_readout(Ephys,retro_k);
+[rmp_retro maxsp_retro rheo_retro rin_retro tau_retro sag_retro trace_retro st_retro] = passive_readout(Ephys,non_ntsr_lab);
 %non lablled
 [rmp_nl maxsp_nl rheo_nl rin_nl tau_nl sag_nl trace_nl st_nl] = passive_readout(Ephys,non_ntsr);
 
 
-rmp_1= [rmp_retro(1:8)' rmp_nl'];
-maxsp_1=[maxsp_retro(1:8)' maxsp_nl'];
-rheo_1=[rheo_retro(1:8)' rheo_nl'];
-rin_1=[rin_retro(1:8)' rin_nl'];
-tau_1=[tau_retro(1:8)' tau_nl'];
-sag_1=[sag_retro(1:8)' sag_nl'];
+rmp_1= [rmp_retro' rmp_nl'];
+maxsp_1=[maxsp_retro' maxsp_nl'];
+rheo_1=[rheo_retro' rheo_nl'];
+rin_1=[rin_retro' rin_nl'];
+tau_1=[tau_retro' tau_nl'];
+sag_1=[sag_retro' sag_nl'];
 %% Reading out further active spike properties using Pandora
 active_nl=sp_parameters_pandora(trace_nl,2);
 active_retro=sp_parameters_pandora(trace_retro,2);
