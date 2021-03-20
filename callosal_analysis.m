@@ -22,6 +22,8 @@ ntsr_cs = cell_selecter(Ephys, 'label',4, 'sol',2,'geno',6);
 retro_k_pv = cell_selecter(Ephys, 'label',1, 'sol',1,'geno',5);
 %PV mouse line, K-gluc, pv+ cells
 pv_k = cell_selecter(Ephys, 'label',3, 'sol',1,'geno',5);
+%% 
+
 %PV mouse line, Cs-gluc, retro cells
 retro_cs_pv = cell_selecter(Ephys, 'label',1, 'sol',2,'geno',5);
 %PV mouse line, Cs-gluc,PV+ cells
@@ -274,12 +276,12 @@ axis off;
  hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
  %% 
  cnr=4;
-%ov_min=-150;ov_max=30;
+ov_min=-150;ov_max=30;
 temp=[];
 temp=find(retro_cs==1);
 fig4=figure;set(fig4, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
 subplot(1,2,1)
-plot(Ephys(temp(cnr)).sub_traces_train(:,1),'Color',[0 0.5 0.5],'LineWidth',1);set(gca,'box','off');
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color',[0 0.5 0.5],'LineWidth',1);set(gca,'box','off');
 hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
 hold on;title('CP');axis off;ylim([ov_min ov_max])
 
@@ -414,11 +416,12 @@ for i=1:length(find(pv_k==1));
 end
 %% Plot EPSC and IPSC retro vs PV
 %EPSC
-paired_plot(epsc_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
+paired_plot(epsc_2,0,{[0 0.5 0.5],[0.8500, 0.3250, 0.0980]});xticklabels({'CP','PV'});ylabel('EPSC peak (pA)');set(gca,'FontSize',10);
 %IPSC
 paired_plot(ipsc_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('IPSC peak (pA)');set(gca,'FontSize',10);
 %E_I
 paired_plot(e_i_2,0,{'k','m'});xticklabels({'CPN','PV'});ylabel('E / I Ratio');set(gca,'FontSize',10);
+
 %% Plot all 5 iterations
 temp=[];
 for i=1:length(find(retro_cs_pv==1));
@@ -648,3 +651,117 @@ xticks([1:18])
 xticklabels(str);
 yticklabels({''});xtickangle(45);[cmap]=buildcmap('mw');colormap(cmap);colorbar;set(gca,'FontSize',10);
 %% 
+
+
+%% TTX experiments
+ttx_id=[206 207 208 209 214];
+%% Plot before and after TTX
+cnr=ttx_id(3);
+ov_min=-20;ov_max=600;
+fig4=figure;set(fig4, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
+subplot(1,2,1)
+plot(Ephys(cnr).sub_traces_train(1:1*sr,2),'Color',[0.5 0.5 0.5],'LineWidth',1.2);set(gca,'box','off');
+hold on;plot(Ephys(cnr).sub_traces_train(1:1*sr,3),'Color','r','LineWidth',1.2);set(gca,'box','off');
+axis off;
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+%scale barx
+ hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
+ %scale bary
+ hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
+subplot(1,2,2)
+cnr=ttx_id(3);
+ov_min=-100;ov_max=20;
+plot(Ephys(cnr).sub_traces_train(1:1*sr,1),'Color',[0.5 0.5 0.5],'LineWidth',1.2);set(gca,'box','off');
+hold on;plot(Ephys(cnr).sub_traces_train(1:1*sr,4),'Color','r','LineWidth',1.2);set(gca,'box','off');
+axis off;
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+%Scale bar
+ scale_x= 200;
+ scale_y= 40;
+ %scale barx
+ hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
+ %scale bary
+ hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
+%% Quantification for IPSC
+ temp=[];ttx_p=[];
+ temp=ttx_id([1 3 4]);
+for i=1:length(ttx_id([1 3 4]));
+    ttx_p(i,:)=[max(abs(Ephys(temp(i)).train_p(:,2))) max(abs(Ephys(temp(i)).train_p(:,3)))];    
+end
+ttx_214=[max(abs(Ephys(214).train_p(:,1))) max(abs(Ephys(214).train_p(:,2)))];
+ttx_all_p=[ttx_p; ttx_214]
+ttx_all_p./max(ttx_all_p,[],2);
+p1=paired_plot(ttx_all_p,1,{'[0.5 0.5 0.5]','r'});xticklabels({'Before','After'});ylabel('Peak IPSC (pA)');set(gca,'FontSize',10);
+%% Quantification for EPSC
+ temp=[];ttx_n=[];
+ temp=ttx_id([1 2 3 4]);
+for i=1:length(temp)
+    ttx_n(i,:)=[max(abs(Ephys(temp(i)).train_n(:,1))) max(abs(Ephys(temp(i)).train_n(:,4)))];    
+end
+ttx_214=[max(abs(Ephys(214).high_n(:,1))) max(abs(Ephys(214).high_n(:,4)))];
+ttx_all_n=[ttx_n; ttx_214]
+
+p1=paired_plot(ttx_all_n,1,{'[0.5 0.5 0.5]','r'});xticklabels({'Before','After'});ylabel('Peak EPSC (pA)');set(gca,'FontSize',10);
+%% Compare PV EPSP (spike no spike) with CPs
+temp=[];
+for i=1:length(find(retro_k_pv==1));
+    temp=find(retro_k_pv==1);
+    r_epsp_pv(i)=max(abs(max(Ephys(temp(i)).train_p(:)))); 
+     try
+   r_epsp_pvh(i)=max(abs(max(Ephys(temp(i)).high_p(:))));  
+    catch
+    r_epsp_pvh(i)=NaN;
+    end
+end
+temp=[];
+ temp=find(pv_k==1);
+ temp(find([Ephys(pv_k).wc]==0))=[]
+for i=1:length(temp);
+    pv_epsp(i)=max(abs(max(Ephys(temp(i)).train_p(:))));
+    try
+    pv_epsp_h(i)=max(abs(max(Ephys(temp(i)).high_p(:))));  
+    catch
+     pv_epsp_h(i)=NaN;
+    end
+end
+retro_epsp_pv=nanmax(cat(1,r_epsp_pv,r_epsp_pvh));
+pv_epsp_pv=nanmax(cat(1,pv_epsp,pv_epsp_h));
+%% Compare EPSP between CP and PV
+par=[retro_epsp_pv pv_epsp_pv];
+g1=1:length(retro_epsp_pv);
+g2=length(retro_epsp_pv)+1:length(pv_epsp_pv)+length(retro_epsp_pv);
+[statsout]=dual_barplot(par,g1,g2,2); ylabel('EPSP (mV)');xticks([1:1:2]);xticklabels({'CP','PV'});set(gca,'FontSize',10);
+%% 
+%% Plot exampe EPSP PV and CP
+
+
+fig4=figure;set(fig4, 'Position', [200, 300, 400, 200]);set(gcf,'color','w');
+ov_min=-20;ov_max=80;
+subplot(1,2,1)
+cnr=1;
+temp=[];
+temp=find(retro_k_pv==1);
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,2),'Color',[0.5 0.5 0.5],'LineWidth',1);set(gca,'box','off');
+hold on;ylim([ov_min-15 ov_max]);title('CP','Color','k');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+axis off;ylim([ov_min ov_max])
+
+subplot(1,2,2)
+cnr=4;
+
+temp=[];
+temp=find(pv_k==1);
+plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,2),'Color',[0.8500, 0.3250, 0.0980],'LineWidth',1);set(gca,'box','off');
+hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
+hold on;title('PV');axis off;ylim([ov_min ov_max])
+
+
+
+%Scale bar
+ scale_x= 200;
+ scale_y= 2.5;
+ %scale barx
+ hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min ov_min],'-','Color','k','LineWidth',1.5); %scale bary
+ hold on;y2= (ov_min)+scale_y;y1=(ov_min);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5); 
+
+ %% pie chart
