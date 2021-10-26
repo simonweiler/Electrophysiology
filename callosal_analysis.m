@@ -248,7 +248,7 @@ e_i_retro=retro_epsc./retro_ipsc;
 e_i_ntsr=ntsr_epsc./ntsr_ipsc;
 e_i_1=[e_i_retro' e_i_ntsr'];
 %% Plot exampe epsc / ipsc of retro and NTSR1
-cnr=2;
+cnr=1;
 ov_min=-150;ov_max=800;
 temp=[];
 temp=find(retro_cs==1);

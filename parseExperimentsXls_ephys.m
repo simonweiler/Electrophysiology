@@ -23,7 +23,7 @@ amp=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Amplifier')));
 pair=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Pair')));
 disx=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistX')));
 disy=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistY')));
-
+drug=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Drugs')));
 k = 1;
 
 batchopt.XLS.txt = xls_txt;
@@ -57,6 +57,7 @@ for i = 2:size(xls_txt,1)
     expcellids12{k}                = xls_txt(i,pair);
     expcellids13{k}                = xls_txt(i,disx);
     expcellids14{k}                = xls_txt(i,disy);
+    expcellids15{k}                = xls_txt(i,drug);
     
     batchopt.exp_ids{k}        = str2num((expcellids{k}{1}));
     batchopt.injectH{k}        = (expcellids2{k}{1});
@@ -74,6 +75,7 @@ for i = 2:size(xls_txt,1)
     batchopt.paired{k}           = str2num((expcellids12{k}{1}));
     batchopt.distancex{k}           = str2num((expcellids13{k}{1}));
     batchopt.distancey{k}           = str2num((expcellids14{k}{1}));
+    batchopt.drugs{k}           = str2num((expcellids15{k}{1}));
     %batchopt.eye_inj_order{k}  = str2num((expcellids12{k}{1}));
     %     batchopt.spont_ids{k}          = str2num((spontcellids{k}{1}));
     %     batchopt.sftf_ids{k}          = str2num((sftfcellids{k}{1}));
