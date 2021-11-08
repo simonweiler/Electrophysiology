@@ -19,7 +19,7 @@ savefile=1;
 experimentator= 'SW';
 rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
 adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
-ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\MC_SW\Experiment_list_SW_MC.xlsx';%directory where excel batch file is located;change accordingly
+ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list_S1V1.xlsx';%directory where excel batch file is located;change accordingly
 
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
@@ -68,6 +68,8 @@ adder=1;%counting variable
             Ephys(adder).distx=batchopt.distancex{i} (k);
             Ephys(adder).disty=batchopt.distancey{i} (k);
             Ephys(adder).drugs=batchopt.drugs{i} (k);
+            Ephys(adder).layer=batchopt.layer{i} (k);
+            Ephys(adder).optovariant=batchopt.optovariant{i} (k);
             
         if LED_stim==1
             %Get LED stimuli of the cell

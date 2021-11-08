@@ -24,6 +24,8 @@ pair=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Pair')));
 disx=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistX')));
 disy=find(~cellfun(@isempty, strfind(xls_txt(1,:),'DistY')));
 drug=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Drugs')));
+layer=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Layer')));
+optovariant=find(~cellfun(@isempty, strfind(xls_txt(1,:),'Optovariant')));
 k = 1;
 
 batchopt.XLS.txt = xls_txt;
@@ -58,6 +60,8 @@ for i = 2:size(xls_txt,1)
     expcellids13{k}                = xls_txt(i,disx);
     expcellids14{k}                = xls_txt(i,disy);
     expcellids15{k}                = xls_txt(i,drug);
+    expcellids16{k}                = xls_txt(i,layer);
+    expcellids17{k}                = xls_txt(i,optovariant);
     
     batchopt.exp_ids{k}        = str2num((expcellids{k}{1}));
     batchopt.injectH{k}        = (expcellids2{k}{1});
@@ -76,6 +80,8 @@ for i = 2:size(xls_txt,1)
     batchopt.distancex{k}           = str2num((expcellids13{k}{1}));
     batchopt.distancey{k}           = str2num((expcellids14{k}{1}));
     batchopt.drugs{k}           = str2num((expcellids15{k}{1}));
+    batchopt.layer{k}           = str2num((expcellids16{k}{1}));
+    batchopt.optovariant{k}           = str2num((expcellids17{k}{1}));
     %batchopt.eye_inj_order{k}  = str2num((expcellids12{k}{1}));
     %     batchopt.spont_ids{k}          = str2num((spontcellids{k}{1}));
     %     batchopt.sftf_ids{k}          = str2num((sftfcellids{k}{1}));

@@ -17,6 +17,7 @@ addParameter(p, 'pair', nan);
 addParameter(p, 'distx', nan);
 addParameter(p, 'disty', nan);
 addParameter(p, 'geno', nan);
+addParameter(p, 'drugs', nan);
 
 % % filters based on QC sheet
 % addParameter(p, 'transduction_QC', 1); % 
@@ -109,9 +110,14 @@ for k = 1:length(fn)
         elseif strcmp(fn{k},'wc')
        temp_filter = cellfun(@(x) all(cell_filters.wc==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;
+    
           elseif strcmp(fn{k},'pair')
        temp_filter = cellfun(@(x) all(cell_filters.pair==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;
+              elseif strcmp(fn{k},'drugs')
+       temp_filter = cellfun(@(x) all(cell_filters.drugs==x),{data2.(fn{k})});
+        filters_array(k,:) = temp_filter;
+      
     else
         temp_filter = cellfun(@(x) all(cell_filters.(fn{k})==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;

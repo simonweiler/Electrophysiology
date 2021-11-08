@@ -155,21 +155,23 @@ srF=sr/1000;
        duration=str2num(data.header.StimulusLibrary.Stimuli.element18.Delegate.Duration)*sr;
        freq=duration/period;                                               
        %deconcatenate traces
-       ste=[1:period:endtime];
+       ste=[delay:period:endtime];
+       bs=filt_traces(delay-1000*2:delay,:);
+       bs_std=std(bs);%std of baseline trace
        for k=1:freq
-      traces_clip=  filt_traces(ste(k):ste(k)+0.5*sr,:); 
-      bs=traces_clip(delay-pulsedur:delay,:);%first 100 ms baseline trace
-      bs_std(k)=std(bs);%std of baseline trace
-      bs_traces(:,k)=traces_clip-mean(traces_clip(base_start:delay,:));%subtract baseline
+      traces_clip=  filt_traces(ste(k):ste(k)+period,:); 
+      %bs=traces_clip(delay-pulsedur:delay,:);%first 100 ms baseline trace
+      
+      bs_traces(:,k)=traces_clip-mean(filt_traces(base_start:delay,:));%subtract baseline
       
        %Negative peak
-          neg_peak(k)=min(bs_traces(delay:delay+0.05*sr,k));
-          neg_fail(k)=neg_peak(k)<fc*bs_std(k)*(-1);
-          tr_d=bs_traces(delay:delay+0.05*sr,k);
+          neg_peak(k)=min(bs_traces(:,k));
+          neg_fail(k)=neg_peak(k)<fc*bs_std*(-1);
+          tr_d=bs_traces(:,k);
           delay_peak_n(k)=find(tr_d==neg_peak(k));
           %Positive peak
-          pos_peak(k)=max(bs_traces(delay:delay+0.05*sr,k));
-          pos_fail(k)=pos_peak(k)>fc*bs_std(k); 
+          pos_peak(k)=max(bs_traces(:,k));
+          pos_fail(k)=pos_peak(k)>fc*bs_std; 
           delay_peak_p(k)=find(tr_d==pos_peak(k));
           %Replace values with 0 where 3std is not applicable
            if neg_fail(k)==1;
