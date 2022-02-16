@@ -18,7 +18,8 @@ addParameter(p, 'distx', nan);
 addParameter(p, 'disty', nan);
 addParameter(p, 'geno', nan);
 addParameter(p, 'drugs', nan);
-
+addParameter(p, 'optovariant', nan);
+addParameter(p, 'layer', nan);
 % % filters based on QC sheet
 % addParameter(p, 'transduction_QC', 1); % 
 % addParameter(p, 'Conf_QC', nan);
@@ -117,7 +118,12 @@ for k = 1:length(fn)
               elseif strcmp(fn{k},'drugs')
        temp_filter = cellfun(@(x) all(cell_filters.drugs==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;
-      
+            elseif strcmp(fn{k},'optovariant')
+       temp_filter = cellfun(@(x) all(cell_filters.optovariant==x),{data2.(fn{k})});
+        filters_array(k,:) = temp_filter;
+          elseif strcmp(fn{k},'layer')
+       temp_filter = cellfun(@(x) all(cell_filters.layer==x),{data2.(fn{k})});
+        filters_array(k,:) = temp_filter;
     else
         temp_filter = cellfun(@(x) all(cell_filters.(fn{k})==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;

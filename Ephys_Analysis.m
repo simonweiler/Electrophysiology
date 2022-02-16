@@ -18,9 +18,10 @@ savefile=1;
 %% Set directories and experimentator
 experimentator= 'SW';
 rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
-adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
-ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list_S1V1.xlsx';%directory where excel batch file is located;change accordingly
-
+%adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
+adata_dir         = 'D:\Postdoc_Margrie\Projects\Whisker\output_structure';%data directory of extracted date;change accordingly
+%ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
+ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list_S1V1.xlsx'
 %% parse Experiments XLS database
 batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
 nummice           = length(batchopt.mouse);%length of experiments to be analyzed

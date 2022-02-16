@@ -178,10 +178,11 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                 end
                     
  end 
-  if ~exist('Ramp')==1;
-      Ramp=[];
+  if ~exist('IV')==1;
+      IV=[];
   end
   
+ 
     if ~exist('Rheobase')==1;
       Rheobase=[];
     end
@@ -191,5 +192,9 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
   
    if ~exist('Sag')==1;
       Sag=[];
+   end
+
+   if ~exist('Ramp')==1;
+      Ramp=[];
   end
 end
