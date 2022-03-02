@@ -53,5 +53,7 @@ e_i_ratio(i)=NaN;
   else
       e_i_ratio(i)=epsc(i)/ipsc(i);
   end
+ 
 end
+e_i_ratio(find(isinf(e_i_ratio)))=NaN;
 end

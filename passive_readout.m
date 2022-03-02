@@ -1,4 +1,6 @@
 function [rmp maxsp rheo rin tau sag trace spike_time] = passive_readout(data,idx)
+%input: Ephys structure from ephys analysis 
+%output: passive properties
 temp=[];
 for i=1:length(find(idx==1));
     temp=find(idx==1);

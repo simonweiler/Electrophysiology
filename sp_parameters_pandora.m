@@ -1,4 +1,9 @@
 function  [active_p] = sp_parameters_pandora(input,nr)
+
+%this will use PANDORA TOOLBOX https://github.com/cengique/pandora-matlab
+%input=trace_pyr is the spike trace (trace at Rheobase is recommended)
+%nr= if trace has more than one spike use second spike in the trace 
+%
 %Parameters are:
 % %%%%[ 1]    'MinVm'        
 %     [ 2]    'PeakVm'       
