@@ -45,8 +45,14 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                        %Spike event / frequency
                        for t=1:length(stimvec)
                        spike_event{:,t}=spike_times(traces_deconc(:,t),0.5);
+%                        if isempty(spike_event{:,t})==1;
+%                            spike_event{:,t}=spike_times(traces_deconc(:,t),1.1);
+%                            spike_log(:,t)=~isempty(spike_event{:,t});
+%                            spikecount(:,t)=length(spike_event{:,t});
+%                        else
                        spike_log(:,t)=~isempty(spike_event{:,t});
                        spikecount(:,t)=length(spike_event{:,t});
+%                        end
                        end
                        IV.RMP=RMP;
                        IV.stimvec=stimvec;

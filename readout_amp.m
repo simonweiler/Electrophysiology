@@ -8,15 +8,21 @@ function [epsc ipsc e_i_ratio] = readout_amp(str,cells_idx,stim_type)
 %str: Ephys structure
 %cells_idx : cells id of desired cells
 %stim_type : 1=train; 2=highfr 1;3=highfr2
+sr=20000;
 %% function 
 temp=find(cells_idx==1);
 %1:read out train stimulus (5 long pulses)
 if stim_type==1   
     for i=1:length(find(cells_idx==1));  
+     
        if isempty(str(temp(i)).train_n)==0;
-           %if isempty(str(temp(i)).sub_traces_train())==0
-   epsc(i)=max(abs(str(temp(i)).train_n(:)));
-   ipsc(i)=max(abs(str(temp(i)).train_p(:)));
+          if max(str(temp(i)).sub_traces_train(1:1*sr,2))>max(str(temp(i)).sub_traces_train(1:1*sr,1))==1
+         epsc(i)=max(abs(str(temp(i)).train_n(:,1)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:,2)));
+          else
+         epsc(i)=max(abs(str(temp(i)).train_n(:,2)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:,1)));
+          end
        else
            epsc(i)=NaN;
            ipsc(i)=NaN;
@@ -26,8 +32,13 @@ if stim_type==1
 elseif stim_type==2
     for i=1:length(find(cells_idx==1));   
         if isempty(str(temp(i)).high_n)==0;
-   epsc(i)=max(abs(str(temp(i)).high_n(:)));
-   ipsc(i)=max(abs(str(temp(i)).high_p(:)));
+     if max(str(temp(i)).sub_traces_high(1:1*sr,2))>max(str(temp(i)).sub_traces_high(1:1*sr,1))==1
+         epsc(i)=max(abs(str(temp(i)).high_n(:,1)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:,2)));
+          else
+         epsc(i)=max(abs(str(temp(i)).high_n(:,2)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:,1)));
+          end
         else
          epsc(i)=NaN;
          ipsc(i)=NaN;  
@@ -37,8 +48,13 @@ elseif stim_type==2
 else stim_type==3
     for i=1:length(find(cells_idx==1)); 
         if isempty(str(temp(i)).highf_n)==0;
-   epsc(i)=max(abs(str(temp(i)).highf_n(:)));
-   ipsc(i)=max(abs(str(temp(i)).highf_p(:)));
+   if max(Ephys(str(i)).sub_traces_highf(1:1*sr,2))>max(str(temp(i)).sub_traces_highf(1:1*sr,1))==1
+         epsc(i)=max(abs(str(temp(i)).highf_n(:,1)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:,2)));
+          else
+         epsc(i)=max(abs(str(temp(i)).highf_n(:,2)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:,1)));
+          end
         else
          epsc(i)=NaN;
          ipsc(i)=NaN;  
