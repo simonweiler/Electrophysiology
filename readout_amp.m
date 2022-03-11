@@ -1,4 +1,4 @@
-function [epsc ipsc e_i_ratio] = readout_amp(str,cells_idx,stim_type)
+function [epsc ipsc e_i_ratio] = readout_amp(str,cells_idx,stim_type,sol,ind1,ind2)
 %read out the overall maximum amplitude for EPSC and ISPC #SW211118
 %% OUTPUT
 %epsc=max epsc amplitude
@@ -16,29 +16,51 @@ if stim_type==1
     for i=1:length(find(cells_idx==1));  
      
        if isempty(str(temp(i)).train_n)==0;
-          if max(str(temp(i)).sub_traces_train(1:1*sr,2))>max(str(temp(i)).sub_traces_train(1:1*sr,1))==1
-         epsc(i)=max(abs(str(temp(i)).train_n(:,1)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:,2)));
+           if sol==2
+               try
+          if max(str(temp(i)).sub_traces_train(1:1*sr,ind2))>max(str(temp(i)).sub_traces_train(1:1*sr,ind1))==1
+         epsc(i)=max(abs(str(temp(i)).train_n(:,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:,ind2)));
           else
-         epsc(i)=max(abs(str(temp(i)).train_n(:,2)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:,1)));
+         epsc(i)=max(abs(str(temp(i)).train_n(:,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:,ind1)));
           end
+              catch 
+         epsc(i)=max(abs(str(temp(i)).train_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:))); 
+             end
+          else sol==1
+         epsc(i)=max(abs(str(temp(i)).train_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(:)));  
+           end
        else
            epsc(i)=NaN;
            ipsc(i)=NaN;
        end
     end
+
 %2:read out high freq stimulus (25, short pulses)   
 elseif stim_type==2
     for i=1:length(find(cells_idx==1));   
-        if isempty(str(temp(i)).high_n)==0;
-     if max(str(temp(i)).sub_traces_high(1:1*sr,2))>max(str(temp(i)).sub_traces_high(1:1*sr,1))==1
-         epsc(i)=max(abs(str(temp(i)).high_n(:,1)));
-         ipsc(i)=max(abs(str(temp(i)).high_p(:,2)));
+      if isempty(str(temp(i)).high_n)==0;
+            if sol==2
+             try
+     if max(str(temp(i)).sub_traces_high(1:1*sr,ind2))>max(str(temp(i)).sub_traces_high(1:1*sr,ind1))==1
+         epsc(i)=max(abs(str(temp(i)).high_n(:,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:,ind2)));
           else
-         epsc(i)=max(abs(str(temp(i)).high_n(:,2)));
-         ipsc(i)=max(abs(str(temp(i)).high_p(:,1)));
-          end
+         epsc(i)=max(abs(str(temp(i)).high_n(:,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:,ind1)));
+     end
+             catch 
+         epsc(i)=max(abs(str(temp(i)).high_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:))); 
+             end
+            else sol==1
+         epsc(i)=max(abs(str(temp(i)).high_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(:)));  
+            end
+    
         else
          epsc(i)=NaN;
          ipsc(i)=NaN;  
@@ -48,13 +70,24 @@ elseif stim_type==2
 else stim_type==3
     for i=1:length(find(cells_idx==1)); 
         if isempty(str(temp(i)).highf_n)==0;
-   if max(Ephys(str(i)).sub_traces_highf(1:1*sr,2))>max(str(temp(i)).sub_traces_highf(1:1*sr,1))==1
-         epsc(i)=max(abs(str(temp(i)).highf_n(:,1)));
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:,2)));
+        if sol==2
+            try
+   if max(str(temp(i)).sub_traces_highf(1:1*sr,ind2))>max(str(temp(i)).sub_traces_highf(1:1*sr,ind1))==1
+         epsc(i)=max(abs(str(temp(i)).highf_n(:,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:,ind2)));
           else
-         epsc(i)=max(abs(str(temp(i)).highf_n(:,2)));
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:,1)));
-          end
+         epsc(i)=max(abs(str(temp(i)).highf_n(:,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:,ind1)));
+   end
+       catch 
+         epsc(i)=max(abs(str(temp(i)).highf_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:))); 
+             end
+        else sol==1
+            epsc(i)=max(abs(str(temp(i)).highf_n(:)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(:)));
+
+        end
         else
          epsc(i)=NaN;
          ipsc(i)=NaN;  
