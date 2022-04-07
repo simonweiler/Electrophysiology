@@ -27,8 +27,10 @@ if stim_type==1
          ipsc(i)=max(abs(str(temp(i)).train_p(:,ind1)));
           end
               catch 
-         epsc(i)=max(abs(str(temp(i)).train_n(:)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:))); 
+%          epsc(i)=max(abs(str(temp(i)).train_n(:)));
+%          ipsc(i)=max(abs(str(temp(i)).train_p(:))); 
+            epsc(i)=0;
+            ipsc(i)=0; 
              end
           else sol==1
          epsc(i)=max(abs(str(temp(i)).train_n(:)));

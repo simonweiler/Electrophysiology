@@ -1,8 +1,9 @@
-function [peak_n peak_p dpeak_n dpeak_p sub_traces] = ephys_LED(filename, data, clamp,amplifier)
+function [peak_n peak_p dpeak_n dpeak_p sub_traces ipsc_tr] = ephys_LED(filename, data, clamp,amplifier)
 
 fc=7;
 base_start=1;
-resp_win=0.05%50 ms in s
+resp_win=0.05;%50 ms in s
+thr_zero=35;
 
 sr=data.header.StimulationSampleRate;
 if str2num(filename(end-4))==0
@@ -44,7 +45,8 @@ srF=sr/1000;
        endtime=data.header.StimulusLibrary.Stimuli.element12.Delegate.EndTime*sr;
        period=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Period)*sr;
        duration=str2num(data.header.StimulusLibrary.Stimuli.element12.Delegate.Duration)*sr
-       freq=duration/period;                                               
+       freq=duration/period;   
+       ipsc_tr=mean(filt_traces(1:5000))>thr_zero;
        %deconcatenate traces
        ste=[1:period:endtime];
        for k=1:freq
@@ -54,12 +56,13 @@ srF=sr/1000;
       bs_traces(:,k)=traces_clip-mean(traces_clip(base_start:delay,:));%subtract baseline
       
        %Negative peak
-          neg_peak(k)=min(bs_traces(delay:delay+0.05*sr,k));
+          %neg_peak(k)=min(bs_traces(delay:delay+0.05*sr,k));
+          neg_peak(k)=min(bs_traces(delay:delay+0.1*sr,k));
           neg_fail(k)=neg_peak(k)<fc*bs_std(k)*(-1);
-          tr_d=bs_traces(delay:delay+0.05*sr,k);
+          tr_d=bs_traces(delay:delay+0.1*sr,k);
           delay_peak_n(k)=find(tr_d==neg_peak(k));
           %Positive peak
-          pos_peak(k)=max(bs_traces(delay:delay+0.05*sr,k));
+          pos_peak(k)=max(bs_traces(delay:delay+0.1*sr,k));
           pos_fail(k)=pos_peak(k)>fc*bs_std(k); 
           delay_peak_p(k)=find(tr_d==pos_peak(k));
           %Replace values with 0 where 3std is not applicable
@@ -99,6 +102,7 @@ srF=sr/1000;
       endtime=data.header.StimulusLibrary.Stimuli.element13.Delegate.EndTime*sr;
       delay_b_p=str2num(data.header.StimulusLibrary.Stimuli.element13.Delegate.DelayBetweenPulses)*sr;
       pulse_count=str2num(data.header.StimulusLibrary.Stimuli.element13.Delegate.PulseCount);
+      ipsc_tr=mean(filt_traces(1:5000))>thr_zero;
       %deconcatenate traces
       ind_traces=reshape(filt_traces(1:endtime,:),[endtime/pulse_count pulse_count]);
       %run through each trace
@@ -153,7 +157,8 @@ srF=sr/1000;
        period=str2num(data.header.StimulusLibrary.Stimuli.element18.Delegate.Period)*sr;
        end
        duration=str2num(data.header.StimulusLibrary.Stimuli.element18.Delegate.Duration)*sr;
-       freq=duration/period;                                               
+       freq=duration/period;      
+       ipsc_tr=mean(filt_traces(1:5000))>thr_zero;
        %deconcatenate traces
        ste=[delay:period:endtime];
        bs=filt_traces(delay-1000*2:delay,:);
