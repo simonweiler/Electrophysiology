@@ -21,8 +21,10 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                 
                 
                 %% 
+                IV=[];
                 
                 if contains(stimuli_type,'IV')==1 
+                    clearvars IV;
                        delay=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.Delay)*sr;
                        delaybp=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.DelayBetweenPulses)*sr;
                        pulsenr=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.PulseCount);
@@ -183,7 +185,7 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                         disp('Uncharted waters');
                 end
                     
- end 
+    end 
   if ~exist('IV')==1;
       IV=[];
   end
@@ -202,5 +204,6 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
 
    if ~exist('Ramp')==1;
       Ramp=[];
-  end
+   end
+
 end

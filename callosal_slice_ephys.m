@@ -1,5 +1,9 @@
 %Callosal input mapping and ephys charaterization  scripts 
-%genotypes 1=Tlx3Cre; 2=Rpb4Cre; 3=Syt6Cre; 4=GADcre tdtomato; 5= PVcre tdtomat; 6=Ntsr1cre tdtomato 
+%genotypes 1=Tlx3Cre; 2=Rpb4Cre; 3=Syt6Cre; 4=GADcre tdtomato; 5= PVcre
+%tdtomat; 6=Ntsr1cre tdtomato ;7=Penk; 8=SOM
+%labels
+%1=callosal; 2=GAD; 3=PV; 4=Ntsr1 tdtomato; 5= Penk
+%6=SOM
 %% Load data structure 
 str_L6    = 'D:\Postdoc_Margrie\Projects\Callosal\output';
 folder_list = uipickfiles('FilterSpec',str_L6);
@@ -7,6 +11,69 @@ load(char(folder_list));
 %sampling rate
 srF=20;
 sr=20000;
+%% read out SOM cells with Cs in SOM animals 
+som_cs = cell_selecter(Ephys, 'label',6,'geno',8,'sol',2,'optovariant',1);
+%% read out CPNs cells with Cs in SOM animals
+cpn_som_cs = cell_selecter(Ephys, 'label',1,'geno',8,'sol',2,'optovariant',1);
+%% 
+som_k = cell_selecter(Ephys, 'label',6,'geno',8,'sol',1,'optovariant',1);
+%% 
+cpn_som_k = cell_selecter(Ephys, 'label',1,'geno',8,'sol',1,'optovariant',1);
+%% read out EPSCs/IPSCSs SOM Cs in SOM animals
+[esom_cs_long isom_cs_long eisom_cs_long] = readout_amp(Ephys,som_cs ,1,2,1,2);
+%% read out EPSCs/IPSCSs CPNs Cs in SOM animals 
+[ecpnsom_cs_long icpnsom_cs_long eicpnsom_cs_long] = readout_amp(Ephys,cpn_som_cs ,1,2,1,2);
+%% read out EPSCs/IPSCSs SOM Cs in SOM animals
+[esom_k_long isom_k_long eisom_k_long] = readout_amp(Ephys,som_k ,1,1,1,2);
+%% read out EPSCs/IPSCSs CPNs Cs in SOM animals 
+[ecpnsom_k_long icpnsom_k_long eicpnsom_k_long] = readout_amp(Ephys,cpn_som_k ,1,1,1,2);
+%% 
+
+temp1=[];temp2=[];
+for i=1:6
+temp1(i,:) = cell_selecter(Ephys,'label',[4],'sol',2,'geno',6,'optovariant',1,'pair',i,'drugs',1);
+temp2(i,:) = cell_selecter(Ephys,'label',[1],'sol',2,'geno',6,'optovariant',1,'pair',i,'drugs',1);
+end
+cre_on_cs=sum(temp1);cre_off_cs=sum(temp2);
+%% read out EPSCs IPSCs in Ntsre Cs
+ntsr_cs = cell_selecter(Ephys, 'label',4,'geno',6,'sol',2,'optovariant',1,'drugs',0);
+ntsr_cs_wi = cell_selecter(Ephys, 'label',4,'geno',6,'sol',2,'optovariant',1,'drugs',1);
+%% 
+cpns_ntsr_cs = cell_selecter(Ephys, 'label',1,'geno',6,'sol',2,'optovariant',1,'drugs',0);
+%cpns_ntsr_cs_wi = cell_selecter(Ephys, 'label',1,'geno',6,'sol',2,'optovariant',1,'drugs',1);
+%% 
+
+[entsr_cs_hf intsr_cs_hf eintsr_cs_hf] = readout_amp(Ephys,ntsr_cs ,1,2,1,2);
+[entsr_cs_hf_w intsr_cs_hf_w eintsr_cs_hf_w] = readout_amp(Ephys,ntsr_cs_wi ,1,2,1,2);
+%% 
+[ecpnr_ntsr_cs_hf icpnr_ntsr_cs_hf eicpnr_ntsr_cs_hf] = readout_amp(Ephys,cpns_ntsr_cs ,1,2,1,2);
+%[ecpnr_ntsr_cs_hf_w icpnr_ntsr_cs_hf_w eicpnr_ntsr_cs_hf_w] = readout_amp(Ephys,cpns_ntsr_cs_wi ,1,2,1,2);
+%% 
+com_cs=[];
+com_cs=[[eintsr_cs_hf eintsr_cs_hf_w(1:2)]' eicpnr_ntsr_cs_hf'];
+[gh gm]=find(isnan(com_cs));
+com_cs(unique(gh),:)=[];
+cl={'r','b'};
+data=[];data=com_cs;
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');set(gca,'FontSize',10);
+%% 
+
+com_cpnsom_cs=[isom_cs_long' icpnsom_cs_long'];
+[gh gm]=find(isnan(com_cpnsom_cs));
+com_cpnsom_cs(unique(gh),:)=[];
+cl={'r','b'};
+data=[];data=com_cpnsom_cs;
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');set(gca,'FontSize',10);
+%% 
+com_som=[]
+com_som=[[esom_cs_long esom_k_long]' [ecpnsom_cs_long ecpnsom_k_long]'];
+cl={'r','b'};
+data=[];data=com_som;
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');set(gca,'FontSize',10);
+
 %% use filter function 'cell selecter' to read out desired cells/line etc.
 %Ntsr1 mouse line, K-gluc, retro cells
 %retro_k = cell_selecter(Ephys, 'label',1, 'sol',1,'geno',6);
@@ -23,7 +90,38 @@ ntsr_ttx_k = cell_selecter(Ephys, 'label',4,'geno',6, 'drugs',2,'sol',1);
 ntsr_ttx_cs = cell_selecter(Ephys, 'label',4,'geno',6, 'drugs',2,'sol',2);
 ntsr_wttx_k= cell_selecter(Ephys, 'label',4,'geno',6, 'drugs',1,'sol',1);
 ntsr_wttx_cs= cell_selecter(Ephys, 'label',4,'geno',6, 'drugs',1,'sol',2);
+%% penk mouse line 
+penk_cs = cell_selecter(Ephys, 'label',5,'geno',7,'sol',2,'optovariant',1);
+retro_cs_penk = cell_selecter(Ephys, 'label',1,'geno',7,'sol',2,'optovariant',1);
 %% 
+all_retro_cs = cell_selecter(Ephys, 'label',1,'sol',2,'drugs',0);
+%% 
+all_ntsr1_cs = cell_selecter(Ephys, 'label',4,'sol',2,'optovariant',1,'drugs',1);
+
+
+
+%% 
+[epsc_all_retro_long ipsc_all_retro_long e_i_all_retro_train] = readout_amp(Ephys,all_retro_cs ,1,2,1,2);
+%% 
+[epsc_all_ntsr1_long ipsc_all_ntsr1_long e_i_all_ntsr1_train] = readout_amp(Ephys,all_ntsr1_cs ,1,2,1,2);
+
+%% 
+[epsc_retropenk_long ipsc_retropenk_long e_i_retropenk_train] = readout_amp(Ephys,retro_cs_penk ,1,2,1,2);
+[epsc_retropenk_hf ipsc_retropenk_hf e_i_ratio_retropenk_hf] = readout_amp(Ephys,retro_cs_penk ,2,2,1,2);
+[epsc_retropenk_hf2 ipsc_retropenk_hf2 e_i_ratio_retropenk_hf2] = readout_amp(Ephys,retro_cs_penk,3,2,1,2);
+%% 
+[epsc_penk_long ipsc_penk_long e_i_penk_train] = readout_amp(Ephys,penk_cs ,1,2,1,2);
+[epsc_penk_hf ipsc_penk_hf e_i_ratio_penk_hf] = readout_amp(Ephys,penk_cs ,2,2,1,2);
+[epsc_penk_hf2 ipsc_penk_hf2 e_i_ratio_penk_hf2] = readout_amp(Ephys,penk_cs,3,2,1,2);
+%% 
+ei_penk_retro=[epsc_penk_long' epsc_retropenk_long'];
+[gh gm]=find(isnan(ei_penk_retro));
+ei_penk_retro(unique(gh),:)=[];
+cl={'r','b'};
+data=[];data=ei_penk_retro;
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');set(gca,'FontSize',10);
+
 
 %% 
 

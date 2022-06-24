@@ -1,5 +1,6 @@
 function [epsc ipsc e_i_ratio] = readout_amp(str,cells_idx,stim_type,sol,ind1,ind2)
 %read out the overall maximum amplitude for EPSC and ISPC #SW211118
+%This ha a thrshold criterion of bigger than 1 now 
 %% OUTPUT
 %epsc=max epsc amplitude
 %ipsc=max ipsc amplitude
@@ -8,8 +9,10 @@ function [epsc ipsc e_i_ratio] = readout_amp(str,cells_idx,stim_type,sol,ind1,in
 %str: Ephys structure
 %cells_idx : cells id of desired cells
 %stim_type : 1=train; 2=highfr 1;3=highfr2
+%sol:K (1) or Cs (2)
+%in1 of traces for wash in experiments (1 2 or 3 and 4)
 sr=20000;
-thr=1
+thr=1;
 %% function 
 temp=find(cells_idx==1);
 %1:read out train stimulus (5 long pulses)
