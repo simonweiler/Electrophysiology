@@ -9,10 +9,10 @@
    
 %% Scripts starts here
 %% 
-LED_stim=1;
-intr_prop=1;
-image_prop=0;
-savefile=1;
+LED_stim=0;
+intr_prop=0;
+image_prop=1;
+savefile=0;
 
 
 %% Set directories and experimentator
@@ -248,11 +248,69 @@ adder=1;%counting variable
        end
        %% Image L6 pial depth read out
        if image_prop==1;
-       [dis] = img_prop(list,exp_folder);
+           close all;
+          cd([exp_folder '\Images']);
+          list_im=dir([exp_folder '\Images' '\*.jpg']);
+       if isempty(list_im)==0;
+           try
+            ima=imread("4x.jpg");
+            ima = imadjust(ima,[0 1],[0.2 1]);
+            figure;imshow(ima);
+            imageGrid(ima,'vertLines', 10, 'horzLines', 10, 'lineWidth', 1, 'lineStyle', ':');
+            prompt = "How much to rotate in deg? ";
+            rotd = input(prompt);
+            ima_rot = imrotate(ima,rotd);figure;imshow(ima_rot);hold on
+            imageGrid(ima_rot,'vertLines', 10, 'horzLines', 10, 'lineWidth', 1, 'lineStyle', ':');
+              prompt = "Satisfied? ";
+              sati = input(prompt);
+
+            while sati==0
+            prompt = "How much to rotate in deg? ";
+            rotd = input(prompt);
+            ima_rot = imrotate(ima,rotd);figure;imshow(ima_rot);hold on
+              imageGrid(ima_rot,'vertLines', 10, 'horzLines', 10, 'lineWidth', 1, 'lineStyle', ':');
+              prompt = "Satisfied? ";
+              sati = input(prompt);
+            end
+
+            [px py]= ginput;
+            
+           catch 
+            px=[NaN; NaN; NaN];
+            py=[NaN; NaN; NaN];
+           end
+
+       else
+            try
+       ima=imread("4x.tiff");
+     ima = imadjust(ima,[0 1],[0.2 1]);
+            figure;imshow(ima);
+            imageGrid(ima,'vertLines', 20, 'horzLines', 20, 'lineWidth', 1, 'lineStyle', ':');
+            prompt = "How much to rotate in deg? ";
+            rotd = input(prompt);
+            ima_rot = imrotate(ima,rotd);figure;imshow(ima_rot);hold on
+            imageGrid(ima_rot,'vertLines', 20, 'horzLines', 20, 'lineWidth', 1, 'lineStyle', ':');
+              prompt = "Satisfied? ";
+              sati = input(prompt);
+
+            while sati==0
+            prompt = "How much to rotate in deg? ";
+            rotd = input(prompt);
+            ima_rot = imrotate(ima,rotd);figure;imshow(ima_rot);hold on
+              imageGrid(ima_rot,'vertLines', 20, 'horzLines', 20, 'lineWidth', 1, 'lineStyle', ':');
+              prompt = "Satisfied? ";
+              sati = input(prompt);
+            end
+           catch 
+           px=[NaN; NaN ;NaN];
+          py=[NaN; NaN; NaN];
+           end
+       end
+
 %        Ephys(adder).pial_depth=pial_depth;
-%        Ephys(adder).xi=xi;
+       Ephys(adder).rel_depth=[px py];
 %        Ephys(adder).yi=yi;
-       Ephys(adder).dis=dis;
+%        Ephys(adder).dis=dis;
        adder=adder+1; 
        end
        

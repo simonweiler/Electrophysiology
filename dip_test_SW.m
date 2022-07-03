@@ -10,7 +10,7 @@ function dip_test(data,pc_a,xlab)
 %https://github.com/brucegcumming/Matlab/blob/master/HartigansDipTest.m
 %% Hartigan's dip test with structure data
 %% Do a Hartigan's Dip test with PCA first
-close all;
+%close all;
 % define the number of bootstraps
 nboot = 500;
 if pc_a==1

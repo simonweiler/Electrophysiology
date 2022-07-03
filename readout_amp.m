@@ -183,4 +183,6 @@ e_i_ratio(i)=NaN;
  
 end
 e_i_ratio(find(isinf(e_i_ratio)))=NaN;
+
+
 end
