@@ -250,16 +250,16 @@ adder=1;%counting variable
                     
             end
        end
-       %% SPIKELIGHT
+       %% 
        
-        if spikeligth==1;
+        if spikelight==1;
             cd([exp_folder '\spikeligth']);
             %Get the intrinsic properties of the cell
             list_sl=dir([char(exp_folder) '\spikeligth' '\*.h5']);
                  for u=1:length(list_sl)  
                 filename=[char(exp_folder) '\spikeligth\' list_sl(u).name];
                 data_sl = loadDataFile_wavesurfer(filename);
-                ephys_spikeligth(filename, data_sl)
+             [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder); 
                  end
                
             Ephys(adder).IV=IV;
