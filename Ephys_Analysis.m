@@ -9,9 +9,9 @@
    
 %% Scripts starts here
 %% 
-LED_stim=0;
-intr_prop=0;
-spikeligth=1;
+LED_stim=1;
+intr_prop=1;
+spikeligth=0;
 image_prop=0;
 savefile=1;
 
@@ -21,6 +21,7 @@ savefile=1;
 experimentator= 'SW';
 rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
 adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
+%adata_dir         = 'G:\slice_ephys';
 %adata_dir         = 'D:\Postdoc_Margrie\Projects\Whisker\output_structure';%data directory of extracted date;change accordingly
 ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
 %ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list_S1V1.xlsx'
@@ -124,8 +125,10 @@ adder=1;%counting variable
                 end
                
             end
-            
-            Ephys(adder).train_n=train_n;
+
+       if contains(stimuli_type,'train')==1 || contains(stimuli_type,'square')==1  
+             
+           Ephys(adder).train_n=train_n;
             Ephys(adder).train_p=train_p;
             Ephys(adder).dpeak_n=dpeak_n;
             Ephys(adder).dpeak_p=dpeak_p;
@@ -133,7 +136,15 @@ adder=1;%counting variable
             Ephys(adder).clamp1=clamp_v1;
             Ephys(adder).ipsc_log=ipsc_tr;
            
-        
+             else
+              Ephys(adder).train_n=[];
+           Ephys(adder).train_p=[];
+             Ephys(adder).dpeak_n=[];
+             Ephys(adder).dpeak_p=[];
+             Ephys(adder).sub_traces_train=[];
+             Ephys(adder).clamp1=[];
+             Ephys(adder).ipsc_log=[];
+             end
            
 
             if exist('ladder_n')==1;
@@ -259,14 +270,13 @@ adder=1;%counting variable
                  for u=1:length(list_sl)  
                 filename=[char(exp_folder) '\spikeligth\' list_sl(u).name];
                 data_sl = loadDataFile_wavesurfer(filename);
-                ephys_spikeligth(filename, data_sl)
+
+                [spikeligth_traces(:,:,u) pulse_specs(:,u)] = ephys_spikeligth(filename, data_sl);
+
                  end
                
-            Ephys(adder).IV=IV;
-            Ephys(adder).Rheobase=Rheobase;
-            Ephys(adder).Passive=Passive;
-            Ephys(adder).Sag=Sag;
-            Ephys(adder).Ramp=Ramp;
+            Ephys(adder).spikelight_traces=spikeligth_traces;
+            Ephys(adder).pulse_specs=pulse_specs;
             
             adder=adder+1;      
                     
