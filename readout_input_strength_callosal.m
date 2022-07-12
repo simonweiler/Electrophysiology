@@ -66,7 +66,7 @@ ntsr_cpnk2=sum(temp1);
 ntsr_cpnk=[];
 ntsr_cpnk=ntsr_cpnk1+ntsr_cpnk2;
 %remove cell 259 and 261 from ntsr1 cause its pair is with TTX
-ntsr_k([259 261])=0;
+ntsr_k([259 261 329])=0;
 %% PENK
 %CS
 temp1=[];penk_cs=[];

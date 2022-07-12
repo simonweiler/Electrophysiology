@@ -12,12 +12,7 @@ if cc==0
 temp=find(act_diff<-st_bs);
 figure;plot(act_diff);hold on;plot([0 1000],[-st_bs -st_bs],'--k');
 if isempty(temp)==0
-     if temp(1)>20
 time_tp=temp(1)/sr;
-     else
-   idx=find(temp>=max(diff(temp)));
-  time_tp=temp(idx(1))/sr;
-     end
 else
     time_tp=NaN;
 end
@@ -25,21 +20,16 @@ end
 else cc==1
 %temp=find(diff(trac(act))>st_bs);
 temp=find(act_diff>st_bs);
-
+if temp(1)>10
 figure;plot(act_diff);hold on;plot([0 1000],[st_bs st_bs],'--k');
 if isempty(temp)==0
-    if temp(1)>20
 time_tp=temp(1)/sr;
-    else
-  idx=find(temp>=max(diff(temp)));
-  time_tp=temp(idx(1))/sr;
-    end
 else
     time_tp=NaN;
 end
-
-
-
+else
+  diff(temp)  
+end
 
 end
 end

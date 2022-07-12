@@ -135,21 +135,20 @@ hold on;h2=histogram(data{:,1},edges,'Normalization','probability');h2.FaceColor
 ;xlim([0 1.4]); set(gca,'FontSize',10)
  % end
   %% readout all cells type for timw windowing epsc ipsc
-  temp2=[];cell_filter=[];
+  temp1=[];cell_filter=[];
   rd=[0 1];
 for i=1:2
-temp2(i,:)=cell_selecter(Ephys,'drugs',rd(i),'label',1,'sol',2,'optovariant',1);
+temp1(i,:)=cell_selecter(Ephys,'drugs',rd(i),'label',3,'geno',5,'sol',2,'optovariant',1);
 end
-cell_filter=sum(temp2);
+cell_filter=sum(temp1);
 %% 
-
+testr=cell_selecter(Ephys,'drugs',0,'label',3,'geno',5,'sol',2,'pair',1)
 %% 
 out_psc=[];
 [out_psc] = readout_amp_update(Ephys,cell_filter ,1,2,1,2);
   %% Time to peak ex and in for retro cells using first pulse of long train 
 %CPN
-fc_1=3.5;
-timing_readout(Ephys, cell_filter, out_psc(:,3), fc_1, 1);
+
 %NTSR1
 %% 
 fc_1=2.5;
@@ -162,4 +161,4 @@ timing_readout(Ephys, cell_filter, out_psc(:,3), fc_1, 1);
 timing_readout(Ephys, cell_filter, out_psc(:,3), fc_1, 0);
 %% PV
 fc_1=3;
-timing_readout(Ephys, cell_filter, out_psc(:,3), fc_1, 1);
+timing_readout(Ephys, cell_filter, out_psc(:,3), fc_1, 0);
