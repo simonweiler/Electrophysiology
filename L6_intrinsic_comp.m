@@ -63,15 +63,15 @@ for i=1:length(temp)
 end
 %% 
 figure;imagesc((spike_counts_all./max(spike_counts_all))');xlim([7 15]);
-%% 
+%% injected currents vs spike frequency
 
- fig4=figure;set(fig4, 'Position', [200, 600, 300, 300]);set(gcf,'color','w');
+ fig4=figure;set(fig4, 'Position', [200, 600, 300, 200]);set(gcf,'color','w');
  for i=1:length(spikecount_cpn)
-     p1=plot(stimvec_cpn{:,i},spikecount_cpn{:,i},'-o');p1.Color=[0.8500 0.3250 0.0980];p1.Color(4)=3/8; 
+     p1=plot(stimvec_cpn{:,i},spikecount_cpn{:,i},'-o');p1.Color='k';p1.Color(4)=3/8; p1.MarkerSize=3;p1.MarkerFaceColor='k';
      hold on;set(gca,'box','off');
  end
 ylabel('Spike frequency (Hz)');xlabel('Injected current (pA)')
-xlim([0 500]);
+xlim([0 500]);set(gca,'FontSize',10);
 %% 
 data_act=[];
 data_act=[active_cpn([1 2 3 5 6 7 8 15],:)' maxsF_cpn'];
@@ -115,6 +115,20 @@ score_tmp=[];score_tmp=score_act;
  scatter(score_tmp(:,1),score_tmp(:,2),20,'filled', 'MarkerFaceAlpha',3/8,'MarkerFaceColor','k');
  ylabel('PC2supra');xlabel('PC1supra');set(gca,'FontSize',10);
  dip_test_SW(score_tmp(:,[1 2 3]),0,{'PC1','PC2','PC3'});ylim([0 30]);
+ %% including both passive and active
+ data_tmp=[];
+data_tmp=[data_pas data_act];
+data_tmp(find(sum(isnan(data_tmp),2)>0),:)=[];
+score_act=[];
+[coeff_act,score_act,latent_act,~,explained_act,mu] = pca(zscore(data_tmp));
+var_exp(explained_act,[],[]); 
+%figure;scatter(score_act(:,1),score_act(:,2));
+score_tmp=[];score_tmp=score_act;
+ fig1=figure;set(gcf,'color','w');set(fig1, 'Position', [200, 200, 250, 250])
+ scatter(score_tmp(:,1),score_tmp(:,2),20,'filled', 'MarkerFaceAlpha',3/8,'MarkerFaceColor','k');
+ ylabel('PC2ephys');xlabel('PC1ephys');
+% dip_test_SW(score_tmp(:,[1 2 3]),0,{'PC1','PC2','PC3'});ylim([0 30]);
+xlim([-5 5]);set(gca,'FontSize',10);
 %% Plot three examples for CPNs
  temp=[];
  step=[];step=3;
@@ -146,8 +160,8 @@ par=[];par=[p1 p2]';
 g1=1:length(p1);
 g2=length(p1)+1:length(par);
 [statsout_rin]=dual_boxplot(par,g1,g2,0);
-ylabel('Input resistance (mOhm)');set(gca,'FontSize',10);
-xlim([0 3]);xticks([1 2]);xticklabels({'CPN','Ntsr1'});xtickangle(45);
+ylabel('Sag ratio (%)');set(gca,'FontSize',10);
+xlim([0 3]);xticks([1 2]);xticklabels({'CP','Ntsr1'});xtickangle(45);
 %% 
 spike_nr=1;
 active_ntsr_cpn=sp_parameters_pandora(trace_ntsr_cpn,spike_nr);
@@ -156,7 +170,7 @@ active_ntsr=sp_parameters_pandora(trace_ntsr,spike_nr);
 
 %% Subplots for active paramaters 
 par1=active_ntsr_cpn([1 2 3 5 6 7 8 15],:);par2=active_ntsr([1 2 3 5 6 7 8 15],:);
-color_id={[0 0 0],[0.8500 0.3250 0.0980]};
+color_id={[0 0 0],'m'};
 str={'APV_{min}(mV)','APV_{peak}(mV)','APV_{thresh}(mV)', 'APVslope_{max} (\DeltamV/\Deltams)','APV_{half} (mV)','APV_{amplitude} (mV)',...
     'AHP_{max}(mV)','AP_{half width} (ms)'};
 
@@ -180,11 +194,20 @@ er.CapSize = 10;hold on;
 hold on;plot(m,nanmean(data{:,m}),'o','MarkerFaceColor',color_id{m},'MarkerEdgeColor',color_id{m},'MarkerSize',7);
 end
 xlim([0 3]);xticks([1 2]);
-xticklabels({'PN','FS'});xtickangle(45);
+xticklabels({'CP','Ntsr1'});xtickangle(45);
 ylabel(str{i});
 set(gca,'FontSize',10)
 [p k]=ranksum(data{:,1},data{:,2});
     statsout(i)=p;
 end 
+%% 
+p1=active_ntsr_cpn(8,:);p2=active_ntsr(8,:);
+par=[];par=[p1 p2]';
+g1=1:length(p1);
+g2=length(p1)+1:length(par);
+[statsout_rin]=dual_boxplot(par,g1,g2,0);
+ylabel('AHP_{max}(mV)');set(gca,'FontSize',10);
+xlim([0 3]);xticks([1 2]);xticklabels({'CP','Ntsr1'});xtickangle(45);
+
 %% Read out max spike frequency
 

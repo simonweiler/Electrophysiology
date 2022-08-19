@@ -2,9 +2,8 @@ function [epsp] = readout_amp_epsp(str,cells_idx,stim_type,sr)
 %read out the overall maximum amplitude for EPSC and ISPC #SW211118
 %has now threshold criterion for high frequency stimuli
 %% OUTPUT
-%epsc=max epsc amplitude
-%ipsc=max ipsc amplitude
-%e_i_ratio= E/Iratio
+%epsp=max epsp amplitude
+
 %% INPUT
 %str: Ephys structure
 %cells_idx : cells id of desired cells
@@ -24,7 +23,11 @@ if stim_type==1
                amp(k)=max(abs(str(temp(i)).train_p(:,k)));
            end
            end
+   if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
+           else
+               epsp(i)=NaN;
+           end
        else
            epsp(i)=NaN;
           
@@ -33,8 +36,10 @@ if stim_type==1
 %2:read out high freq stimulus (25, short pulses)   
 elseif stim_type==2
      for i=1:length(find(cells_idx==1));  
+          k=[];
        if isempty(str(temp(i)).high_p)==0;
            amp=[];
+           k=[];
            for k=1:size(str(temp(i)).sub_traces_high,2)
            if isempty(find(str(temp(i)).sub_traces_high(6.24*sr:end,k)<-50))==0
                amp(k)=NaN;
@@ -46,7 +51,11 @@ elseif stim_type==2
                end
            end
            end
+           if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
+           else
+               epsp(i)=NaN;
+           end
        else
            epsp(i)=NaN;
           
@@ -68,7 +77,11 @@ else stim_type==3
                end
            end
            end
+  if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
+           else
+               epsp(i)=NaN;
+           end
        else
            epsp(i)=NaN;
           
