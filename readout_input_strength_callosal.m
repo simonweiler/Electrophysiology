@@ -1,7 +1,7 @@
 function [ntsr_cs_cells ntsr_cpncs_cells ntsr_k_cells ntsr_cpnk_cells ...
     penk_cs_cells penk_cpncs_cells penk_k_cells penk_cpnk_cells ...
-    som_cs_cells som_cpncs_cells som_k_cells som_cpnk_cells ...
-    pv_cs_cells pv_cpncs_cells pv_k_cells pv_cpnk_cells] = readout_input_strength_callosal(Ephys)
+    cci_k_cells cci_cpnk_cells som_cs_cells som_cpncs_cells som_k_cells som_cpnk_cells ...
+    pv_cs_cells pv_cpncs_cells pv_k_cells pv_cpnk_cells vip_k_cells vip_cpnk_cells] = readout_input_strength_callosal(Ephys)
 %% compare CPN to NTSR1, SOM and PV EPSC input PAIRED
 %CS NTSR1 paired (no drugs and before washin)
 temp1=[];ntsr_cs1=[];
@@ -94,6 +94,21 @@ for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',7,'sol',1,'optovariant',1,'pair',i);
 end
 penk_cpnk=sum(temp1);
+%% Unlabelled excitatry cell in ntsr1 animal (additional to Penk CCi) only K solution
+%CCiK
+%K
+temp1=[];cci_k=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',0,'geno',6,'sol',1,'optovariant',0,'pair',i);
+end
+cci_k=sum(temp1);
+%K
+temp1=[];cci_cpnk=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',1,'optovariant',0,'pair',i);
+end
+cci_cpnk=sum(temp1);
+
 %% SOM cells 
 %CS
 temp1=[];som_cs=[];
@@ -152,7 +167,33 @@ pv_cpnk=sum(temp1);
 %remove cell 195 and 200 from ntsr1 cause its pair is with TTX
 pv_k([195 200])=0;
 
+%% VIP cells
+%CS
+temp1=[];vip_cs=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',2,'pair',i);
+end
+vip_cs=sum(temp1);
+%K
+temp1=[];vip_k=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',1,'pair',i);
+end
+vip_k=sum(temp1);
 
+%PV CPN
+%CS
+temp1=[];vip_cpncs=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',9,'sol',2,'pair',i);
+end
+vip_cpncs=sum(temp1);
+%K
+temp1=[];vip_cpnk=[];
+for i=1:6
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',9,'sol',1,'pair',i);
+end
+vip_cpnk=sum(temp1);
 %%  Read out peaks from train for NTSR CS for train (long), middle frequency (high), highest (highf)
 [ntsr_psc_csl] = readout_amp_update(Ephys,ntsr_cs ,1,2,1,2);
 [ntsr_psc_cshf] = readout_amp_update(Ephys,ntsr_cs ,2,2,1,2);
@@ -187,6 +228,15 @@ pv_k([195 200])=0;
 [penk_psc_cpnkl] = readout_amp_update(Ephys,penk_cpnk ,1,1,1,2);
 [penk_psc_cpnkhf] = readout_amp_update(Ephys,penk_cpnk ,2,1,1,2);
 [penk_psc_cpnkhf2] = readout_amp_update(Ephys,penk_cpnk ,3,1,1,2);
+%% CCI
+%%  Read out peaks from train for CCI K for train (long), middle frequency (high), highest (highf)
+[cci_psc_kl] = readout_amp_update(Ephys,cci_k ,1,1,1,2);
+[cci_psc_khf] = readout_amp_update(Ephys,cci_k ,2,1,1,2);
+[cci_psc_khf2] = readout_amp_update(Ephys,cci_k ,3,1,1,2);
+
+[cci_psc_cpnkl] = readout_amp_update(Ephys,cci_cpnk ,1,1,1,2);
+[cci_psc_cpnkhf] = readout_amp_update(Ephys,cci_cpnk ,2,1,1,2);
+[cci_psc_cpnkhf2] = readout_amp_update(Ephys,cci_cpnk ,3,1,1,2);
 
 %SOM
 %%  Read out peaks from train for PENK CS for train (long), middle frequency (high), highest (highf)
@@ -223,7 +273,23 @@ pv_k([195 200])=0;
 [pv_psc_cpnkl] = readout_amp_update(Ephys,pv_cpnk ,1,1,1,2);
 [pv_psc_cpnkhf] = readout_amp_update(Ephys,pv_cpnk ,2,1,1,2);
 [pv_psc_cpnkhf2] = readout_amp_update(Ephys,pv_cpnk ,3,1,1,2);
-
+%% VIP
+%%  Read out peaks from train for VIP CS for train (long), middle frequency (high), highest (highf)
+% [vip_psc_csl] = readout_amp_update(Ephys,vip_cs ,1,2,1,2);
+% [vip_psc_cshf] = readout_amp_update(Ephys,vip_cs ,2,2,1,2);
+% [vip_psc_cshf2] = readout_amp_update(Ephys,vip_cs ,3,2,1,2);
+%%  Read out peaks from train for VIP K for train (long), middle frequency (high), highest (highf)
+[vip_psc_kl] = readout_amp_update(Ephys,vip_k ,1,1,1,2);
+[vip_psc_khf] = readout_amp_update(Ephys,vip_k ,2,1,1,2);
+[vip_psc_khf2] = readout_amp_update(Ephys,vip_k ,3,1,1,2);
+%%  Read out peaks from train for CPN VIP CS for train (long), middle frequency (high), highest (highf)
+% [vip_psc_cpncsl] = readout_amp_update(Ephys,vip_cpncs ,1,2,1,2);
+% [vip_psc_cpncshf] = readout_amp_update(Ephys,vip_cpncs ,2,2,1,2);
+% [vip_psc_cpncshf2] = readout_amp_update(Ephys,vip_cpncs ,3,2,1,2);
+%%  Read out peaks from train for CPN VIP K for train (long), middle frequency (high), highest (highf)
+[vip_psc_cpnkl] = readout_amp_update(Ephys,vip_cpnk ,1,1,1,2);
+[vip_psc_cpnkhf] = readout_amp_update(Ephys,vip_cpnk ,2,1,1,2);
+[vip_psc_cpnkhf2] = readout_amp_update(Ephys,vip_cpnk ,3,1,1,2);
 %% output data
 ntsr_cs_cells = [ntsr_psc_csl ntsr_psc_cshf ntsr_psc_cshf2];
 ntsr_k_cells = [ntsr_psc_kl ntsr_psc_khf ntsr_psc_khf2];
@@ -235,6 +301,10 @@ penk_k_cells = [penk_psc_kl penk_psc_khf penk_psc_khf2];
 penk_cpncs_cells = [penk_psc_cpncsl penk_psc_cpncshf penk_psc_cpncshf2];
 penk_cpnk_cells = [penk_psc_cpnkl penk_psc_cpnkhf penk_psc_cpnkhf2];
 
+
+cci_k_cells = [cci_psc_kl cci_psc_khf cci_psc_khf2];
+cci_cpnk_cells = [cci_psc_cpnkl cci_psc_cpnkhf cci_psc_cpnkhf2];
+
 som_cs_cells = [som_psc_csl som_psc_cshf som_psc_cshf2];
 som_k_cells = [som_psc_kl som_psc_khf som_psc_khf2];
 som_cpncs_cells = [som_psc_cpncsl som_psc_cpncshf som_psc_cpncshf2];
@@ -245,11 +315,19 @@ pv_k_cells = [pv_psc_kl pv_psc_khf pv_psc_khf2];
 pv_cpncs_cells = [pv_psc_cpncsl pv_psc_cpncshf pv_psc_cpncshf2];
 pv_cpnk_cells = [pv_psc_cpnkl pv_psc_cpnkhf pv_psc_cpnkhf2];
 
+%vip_cs_cells = [vip_psc_csl vip_psc_cshf vip_psc_cshf2];
+vip_k_cells = [vip_psc_kl vip_psc_khf vip_psc_khf2];
+%vip_cpncs_cells = [vip_psc_cpncsl vip_psc_cpncshf vip_psc_cpncshf2];
+vip_cpnk_cells = [vip_psc_cpnkl vip_psc_cpnkhf vip_psc_cpnkhf2];
+
 ntsr_k_cells(:,[2 3 5 6 8 9])=ntsr_k_cells(:,[2 3 5 6 8 9])*NaN;
 ntsr_cpnk_cells(:,[2 3 5 6 8 9])=ntsr_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
 
 penk_k_cells(:,[2 3 5 6 8 9])=penk_k_cells(:,[2 3 5 6 8 9])*NaN;
 penk_cpnk_cells(:,[2 3 5 6 8 9])=penk_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
+
+cci_k_cells(:,[2 3 5 6 8 9])=cci_k_cells(:,[2 3 5 6 8 9])*NaN;
+cci_cpnk_cells(:,[2 3 5 6 8 9])=cci_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
 
 som_k_cells(:,[2 3 5 6 8 9])=som_k_cells(:,[2 3 5 6 8 9])*NaN;
 som_cpnk_cells(:,[2 3 5 6 8 9])=som_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
@@ -257,5 +335,7 @@ som_cpnk_cells(:,[2 3 5 6 8 9])=som_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
 pv_k_cells(:,[2 3 5 6 8 9])=pv_k_cells(:,[2 3 5 6 8 9])*NaN;
 pv_cpnk_cells(:,[2 3 5 6 8 9])=pv_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
 
+vip_k_cells(:,[2 3 5 6 8 9])=vip_k_cells(:,[2 3 5 6 8 9])*NaN;
+vip_cpnk_cells(:,[2 3 5 6 8 9])=vip_cpnk_cells(:,[2 3 5 6 8 9])*NaN;
 
 end

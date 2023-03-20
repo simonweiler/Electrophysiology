@@ -23,7 +23,7 @@ if stim_type==1
                amp(k)=max(abs(str(temp(i)).train_p(:,k)));
            end
            end
-   if length(amp)>=2
+   if length(amp)>=2 & any(~isnan(amp))==1
    epsp(i)=max(amp(find(~isnan(amp))));
            else
                epsp(i)=NaN;
@@ -54,7 +54,7 @@ elseif stim_type==2
            if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
            else
-               epsp(i)=NaN;
+               epsp(i)=amp;
            end
        else
            epsp(i)=NaN;

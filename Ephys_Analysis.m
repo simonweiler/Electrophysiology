@@ -266,7 +266,9 @@ adder=1;%counting variable
         if spikeligth==1;
             cd([exp_folder '\spikeligth']);
             %Get the intrinsic properties of the cell
+            list_sl=[];spikeligth_traces=[];
             list_sl=dir([char(exp_folder) '\spikeligth' '\*.h5']);
+            
                  for u=1:length(list_sl)  
                 filename=[char(exp_folder) '\spikeligth\' list_sl(u).name];
                 data_sl = loadDataFile_wavesurfer(filename);
@@ -279,7 +281,8 @@ adder=1;%counting variable
             Ephys(adder).pulse_specs=pulse_specs;
             
             adder=adder+1;      
-                    
+            
+            clear pulse_specs;
             
        end
 

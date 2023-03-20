@@ -147,9 +147,12 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                            tau_tr=traces_deconc(0.5*delay:delay,1:5);
                            g=fittype('a-b*exp(-x/tau)');
                            x=[1:length(tau_tr)];
+                           %figure;;set(gcf,'color','w');hold on;
                            for j=1:5
                            f0=fit(x',tau_tr(:,j),g,'Startpoint',[tau_tr(1,j) tau_tr(end,j) 0.3]);
                            Passive.tau(j)=f0.tau/srF;
+%                            hold on;
+%                           plot(f0)
                            end                         
                             Passive.traces=traces_deconc;
                            
