@@ -1,7 +1,7 @@
 function [ntsr_cs_cells ntsr_cpncs_cells ntsr_k_cells ntsr_cpnk_cells ...
     penk_cs_cells penk_cpncs_cells penk_k_cells penk_cpnk_cells ...
     cci_k_cells cci_cpnk_cells som_cs_cells som_cpncs_cells som_k_cells som_cpnk_cells ...
-    pv_cs_cells pv_cpncs_cells pv_k_cells pv_cpnk_cells vip_k_cells vip_cpnk_cells] = readout_input_strength_callosal(Ephys)
+    pv_cs_cells pv_cpncs_cells pv_k_cells pv_cpnk_cells vip_cs_cells vip_cpncs_cells vip_k_cells vip_cpnk_cells] = readout_input_strength_callosal(Ephys)
 %% compare CPN to NTSR1, SOM and PV EPSC input PAIRED
 %CS NTSR1 paired (no drugs and before washin)
 temp1=[];ntsr_cs1=[];
@@ -181,7 +181,7 @@ temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',1,'pair',i);
 end
 vip_k=sum(temp1);
 
-%PV CPN
+%VIP CPN
 %CS
 temp1=[];vip_cpncs=[];
 for i=1:6
@@ -275,17 +275,17 @@ vip_cpnk=sum(temp1);
 [pv_psc_cpnkhf2] = readout_amp_update(Ephys,pv_cpnk ,3,1,1,2);
 %% VIP
 %%  Read out peaks from train for VIP CS for train (long), middle frequency (high), highest (highf)
-% [vip_psc_csl] = readout_amp_update(Ephys,vip_cs ,1,2,1,2);
-% [vip_psc_cshf] = readout_amp_update(Ephys,vip_cs ,2,2,1,2);
-% [vip_psc_cshf2] = readout_amp_update(Ephys,vip_cs ,3,2,1,2);
+[vip_psc_csl] = readout_amp_update(Ephys,vip_cs ,1,2,1,2);
+[vip_psc_cshf] = readout_amp_update(Ephys,vip_cs ,2,2,1,2);
+[vip_psc_cshf2] = readout_amp_update(Ephys,vip_cs ,3,2,1,2);
 %%  Read out peaks from train for VIP K for train (long), middle frequency (high), highest (highf)
 [vip_psc_kl] = readout_amp_update(Ephys,vip_k ,1,1,1,2);
 [vip_psc_khf] = readout_amp_update(Ephys,vip_k ,2,1,1,2);
 [vip_psc_khf2] = readout_amp_update(Ephys,vip_k ,3,1,1,2);
 %%  Read out peaks from train for CPN VIP CS for train (long), middle frequency (high), highest (highf)
-% [vip_psc_cpncsl] = readout_amp_update(Ephys,vip_cpncs ,1,2,1,2);
-% [vip_psc_cpncshf] = readout_amp_update(Ephys,vip_cpncs ,2,2,1,2);
-% [vip_psc_cpncshf2] = readout_amp_update(Ephys,vip_cpncs ,3,2,1,2);
+[vip_psc_cpncsl] = readout_amp_update(Ephys,vip_cpncs ,1,2,1,2);
+[vip_psc_cpncshf] = readout_amp_update(Ephys,vip_cpncs ,2,2,1,2);
+[vip_psc_cpncshf2] = readout_amp_update(Ephys,vip_cpncs ,3,2,1,2);
 %%  Read out peaks from train for CPN VIP K for train (long), middle frequency (high), highest (highf)
 [vip_psc_cpnkl] = readout_amp_update(Ephys,vip_cpnk ,1,1,1,2);
 [vip_psc_cpnkhf] = readout_amp_update(Ephys,vip_cpnk ,2,1,1,2);
@@ -315,9 +315,9 @@ pv_k_cells = [pv_psc_kl pv_psc_khf pv_psc_khf2];
 pv_cpncs_cells = [pv_psc_cpncsl pv_psc_cpncshf pv_psc_cpncshf2];
 pv_cpnk_cells = [pv_psc_cpnkl pv_psc_cpnkhf pv_psc_cpnkhf2];
 
-%vip_cs_cells = [vip_psc_csl vip_psc_cshf vip_psc_cshf2];
+vip_cs_cells = [vip_psc_csl vip_psc_cshf vip_psc_cshf2];
 vip_k_cells = [vip_psc_kl vip_psc_khf vip_psc_khf2];
-%vip_cpncs_cells = [vip_psc_cpncsl vip_psc_cpncshf vip_psc_cpncshf2];
+vip_cpncs_cells = [vip_psc_cpncsl vip_psc_cpncshf vip_psc_cpncshf2];
 vip_cpnk_cells = [vip_psc_cpnkl vip_psc_cpnkhf vip_psc_cpnkhf2];
 
 ntsr_k_cells(:,[2 3 5 6 8 9])=ntsr_k_cells(:,[2 3 5 6 8 9])*NaN;

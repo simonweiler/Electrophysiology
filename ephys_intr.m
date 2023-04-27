@@ -33,6 +33,7 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                        pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.PulseDuration)*sr;
                        firstamp=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.FirstPulseAmplitude);
                        ampch=str2num(data.header.StimulusLibrary.Stimuli.element1.Delegate.AmplitudeChangePerPulse);
+                       stimvec=[];
                        stimvec=[firstamp:ampch:(pulsenr*ampch+(firstamp-ampch))];
                        %Deconcatenate traces
                        startpoint=[delay/2:pulsedur+delaybp:tracel];
@@ -71,6 +72,7 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                         pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element9.Delegate.PulseDuration)*sr;
                         firstamp=str2num(data.header.StimulusLibrary.Stimuli.element9.Delegate.FirstPulseAmplitude);
                         ampch=str2num(data.header.StimulusLibrary.Stimuli.element9.Delegate.AmplitudeChangePerPulse);
+                        stimvec=[];
                         stimvec=[firstamp:ampch:(pulsenr*ampch+(firstamp-ampch))];
                         %Deconcatenate traces
                         startpoint=[delay/2:pulsedur+delaybp:tracel];
@@ -125,6 +127,7 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                            pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element6.Delegate.PulseDuration)*sr;
                            firstamp=str2num(data.header.StimulusLibrary.Stimuli.element6.Delegate.FirstPulseAmplitude);
                            ampch=str2num(data.header.StimulusLibrary.Stimuli.element6.Delegate.AmplitudeChangePerPulse);
+                           stimvec=[];
                            stimvec=[firstamp:ampch:(pulsenr*ampch+(firstamp-ampch))];
                            %Deconcatenate traces
                            startpoint=[delay/2:pulsedur+delaybp:tracel];
@@ -164,6 +167,7 @@ function [IV Rheobase Passive Sag Ramp] = ephys_intr(list, idx_intr, exp_folder)
                         pulsedur=str2num(data.header.StimulusLibrary.Stimuli.element5.Delegate.PulseDuration)*sr;
                         firstamp=str2num(data.header.StimulusLibrary.Stimuli.element5.Delegate.FirstPulseAmplitude);
                         ampch=str2num(data.header.StimulusLibrary.Stimuli.element5.Delegate.AmplitudeChangePerPulse);
+                        stimvec=[];
                         stimvec=ones(1,pulsenr)*firstamp;
                         %Deconcatenate traces
                          startpoint=[delay/2:pulsedur+delaybp:tracel];

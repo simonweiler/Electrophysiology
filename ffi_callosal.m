@@ -60,6 +60,115 @@ in_k_cells=cell_selecter(Ephys,'drugs',0,'label',2,'sol',1);
 [som_spk] = spike_counts(Ephys,som_k_cells);
 [vip_spk] = spike_counts(Ephys,vip_k_cells);
 [gad_spk] = spike_counts(Ephys,in_k_cells);
+%% find threshold for fast spiker
+threshold_FS=round((prctile([som_spk],25) + prctile([pv_spk],5) + prctile([cpn_spk ntsr_spk penk_spk cci_spk],95))/3);
+
+%% 
+[rmp_cpn maxsp_cpn rheo_cpn rin_cpn tau_cpn sag_cpn trace_cpn spike_time_cpn] = passive_readout(Ephys,cpn_k_cells);
+[rmp_cpn maxsp_ct rheo_ct rin_ct tau_ct sag_ct trace_ct spike_time_ct] = passive_readout(Ephys,ntsr_k_cells);
+[rmp_penk maxsp_penk rheo_penk rin_penk tau_penk sag_penk trace_penk spike_time_penk] = passive_readout(Ephys,penk_k_cells);
+[rmp_cci maxsp_cci rheo_cci rin_cci tau_cci sag_cci trace_cci spike_time_cci] = passive_readout(Ephys,penk_k_cells);
+[rmp_pv maxsp_pv rheo_pv rin_pv tau_pv sag_pv trace_pv spike_time_pv] = passive_readout(Ephys,pv_k_cells);
+[rmp_som maxsp_som rheo_som rin_som tau_som sag_som trace_som spike_time_som] = passive_readout(Ephys,som_k_cells);
+[rmp_vip maxsp_vip rheo_vip rin_vip tau_vip sag_vip trace_vip spike_time_vip] = passive_readout(Ephys,vip_k_cells);
+[rmp_gad maxsp_gad rheo_gad rin_gad tau_gad sag_gad trace_gad spike_time_gad] = passive_readout(Ephys,in_k_cells);
+%% 
+spike_nr=1;
+active_pv=sp_parameters_pandora(trace_pv,spike_nr);
+active_som=sp_parameters_pandora(trace_som,spike_nr);
+active_vip=sp_parameters_pandora(trace_vip,spike_nr);
+active_gad=sp_parameters_pandora(trace_gad,spike_nr);
+
+%% check ephys propoerties for cell that spiked upon light activtaion and the non spiking cells
+spike_thr=50;
+max_sp_thr=30;
+
+p1=ranksum([rmp_pv(find(epsp_pv>spike_thr)) rmp_som(find(epsp_som>spike_thr)) rmp_gad(find(epsp_gad>spike_thr))],...
+    [rmp_som(find(som_spk<max_sp_thr)) rmp_gad(find(gad_spk<max_sp_thr)) rmp_vip(find(vip_spk<max_sp_thr))])
+p2=ranksum([rin_pv(find(epsp_pv>spike_thr)) rin_som(find(epsp_som>spike_thr)) rin_gad(find(epsp_gad>spike_thr))],...
+    [rin_som(find(som_spk<max_sp_thr)) rin_gad(find(gad_spk<max_sp_thr)) rin_vip(find(vip_spk<max_sp_thr))])
+p3=ranksum([rheo_pv(find(epsp_pv>spike_thr)) rheo_som(find(epsp_som>spike_thr)) rheo_gad(find(epsp_gad>spike_thr))],...
+    [rheo_som(find(som_spk<max_sp_thr)) rheo_gad(find(gad_spk<max_sp_thr)) rheo_vip(find(vip_spk<max_sp_thr))])
+p4=ranksum([tau_pv(find(epsp_pv>spike_thr)) tau_som(find(epsp_som>spike_thr)) tau_gad(find(epsp_gad>spike_thr))],...
+    [tau_som(find(som_spk<max_sp_thr)) tau_gad(find(gad_spk<max_sp_thr)) tau_vip(find(vip_spk<max_sp_thr))])
+%% 
+p_active=[];
+for nr=1:18
+
+p_active(nr)=ranksum([active_pv(nr,find(epsp_pv>spike_thr)) active_som(nr,find(epsp_som>spike_thr)) active_gad(nr,find(epsp_gad>spike_thr),1)],...
+    [active_som(nr,find(som_spk<max_sp_thr)) active_gad(nr,find(gad_spk<max_sp_thr)) active_vip(nr,find(vip_spk<max_sp_thr))])
+end
+%% 
+
+p_active=[];
+for nr=1:18
+
+p_active(nr)=ranksum([active_pv(nr,find(pv_spk>max_sp_thr)) active_som(nr,find(som_spk>max_sp_thr)) active_gad(nr,find(gad_spk>max_sp_thr),1)],...
+    [active_som(nr,find(som_spk<max_sp_thr)) active_gad(nr,find(gad_spk<max_sp_thr)) active_vip(nr,find(vip_spk<max_sp_thr))])
+end
+%% 
+p_active=[];
+for nr=1:18
+
+p_active(nr)=ranksum([active_pv(nr,find(epsp_pv>spike_thr)) active_som(nr,find(epsp_som>spike_thr)) active_gad(nr,find(epsp_gad>spike_thr),1)],...
+    [active_pv(nr,find(epsp_pv<spike_thr)) active_som(nr,find(epsp_som<spike_thr)) active_gad(nr,find(epsp_gad<spike_thr),1)])
+end
+
+%% 
+
+g1=[];g2=[];
+p1=[];p2=[];
+%combine ex and in
+p1=[rin_pv(find(epsp_pv>spike_thr)) rin_som(find(epsp_som>spike_thr)) rin_gad(find(epsp_gad>spike_thr))];p2=[rin_som(find(som_spk<max_sp_thr)) rin_gad(find(gad_spk<max_sp_thr)) rin_vip(find(vip_spk<max_sp_thr))];
+par=[];par=[p1 p2]';
+g1=[];g1=ones(1,length(p1)); 
+g2=[];g2=ones(1,length(p2))*2;
+gro=[];gro=[g1 g2]';
+fig7= figure;set(fig7, 'Name', 'Barplot groups');set(fig7, 'Position', [400, 500, 300, 300]);set(gcf,'color','w');
+%hold on;line([0 3],[0 0],'LineStyle',':','Color','k','LineWidth',1)
+violins = violinplot(par, gro,'ViolinColor',[[0.3 0.3 0.3]; [0.6 0.6 0.6]]);box off;
+xlim([0 3]);ylabel('Input Resistance');set(gca,'FontSize',12);
+% h = gca;h.XAxis.Visible = 'off';
+% set(gca,'xtick',[]);
+xticklabels({'L6 FS INs','L6 NFS INs'});xtickangle(45);
+%ylim([-1.2 1.2]);
+%% 
+
+g1=[];g2=[];
+p1=[];p2=[];
+%combine ex and in
+p1=[tau_pv(find(epsp_pv>spike_thr)) tau_som(find(epsp_som>spike_thr)) tau_gad(find(epsp_gad>spike_thr))];p2=[tau_som(find(som_spk<max_sp_thr)) tau_gad(find(gad_spk<max_sp_thr)) tau_vip(find(vip_spk<max_sp_thr))];
+par=[];par=[p1 p2]';
+g1=[];g1=ones(1,length(p1)); 
+g2=[];g2=ones(1,length(p2))*2;
+gro=[];gro=[g1 g2]';
+fig7= figure;set(fig7, 'Name', 'Barplot groups');set(fig7, 'Position', [400, 500, 300, 300]);set(gcf,'color','w');
+%hold on;line([0 3],[0 0],'LineStyle',':','Color','k','LineWidth',1)
+violins = violinplot(par, gro,'ViolinColor',[[0.3 0.3 0.3]; [0.6 0.6 0.6]]);box off;
+xlim([0 3]);ylabel('Tau');set(gca,'FontSize',12);
+% h = gca;h.XAxis.Visible = 'off';
+% set(gca,'xtick',[]);
+xticklabels({'L6 FS INs','L6 NFS INs'});xtickangle(45);
+%ylim([-1.2 1.2]);
+%% 
+nr=4
+g1=[];g2=[];
+p1=[];p2=[];
+%combine ex and in
+p1=[active_pv(nr,find(epsp_pv>spike_thr)) active_som(nr,find(epsp_som>spike_thr)) active_gad(nr,find(epsp_gad>spike_thr),1)];p2=[active_som(nr,find(som_spk<max_sp_thr)) active_gad(nr,find(gad_spk<max_sp_thr)) active_vip(nr,find(vip_spk<max_sp_thr))];
+par=[];par=[p1 p2]';
+g1=[];g1=ones(1,length(p1)); 
+g2=[];g2=ones(1,length(p2))*2;
+gro=[];gro=[g1 g2]';
+fig7= figure;set(fig7, 'Name', 'Barplot groups');set(fig7, 'Position', [400, 500, 300, 300]);set(gcf,'color','w');
+%hold on;line([0 3],[0 0],'LineStyle',':','Color','k','LineWidth',1)
+violins = violinplot(par, gro,'ViolinColor',[[0.3 0.3 0.3]; [0.6 0.6 0.6]]);box off;
+xlim([0 3]);ylabel('Tau');set(gca,'FontSize',12);
+% h = gca;h.XAxis.Visible = 'off';
+% set(gca,'xtick',[]);
+xticklabels({'L6 FS INs','L6 NFS INs'});xtickangle(45);
+%ylim([-1.2 1.2]);
+
 %% example injected current vs spike frequency
 
 cnr=22;cnr2=26;
@@ -102,7 +211,7 @@ s6=scatter(som_spk,epsp_som,pointsize,'b','filled','MarkerFaceColor',([27 117 18
 s7=scatter(vip_spk,epsp_vip,pointsize,'g','filled','MarkerFaceColor',([0 165 81]./256),'MarkerEdgeColor','w');hold on;
 s8=scatter(gad_spk,epsp_gad,pointsize,'k','filled','MarkerFaceColor',([0.5 0.5 0.5]),'MarkerEdgeColor','w');hold on;
 xlim([-3 120]);ylim([-3 120]);
-hold on;line([30 30],[ylim],'linewidth',0.5,'Color','k','LineStyle','--');
+hold on;line([threshold_FS threshold_FS],[ylim],'linewidth',0.5,'Color','k','LineStyle','--');
 hold on;line([xlim],[45 45],'linewidth',0.5,'Color','k','LineStyle','--');
 % legend({'CPN','CT','CCi','CCi','PV','SST','VIP','GAD'},'Location','northwest');
 legend({'PV','SST','VIP','GAD'},'Location','northwest');

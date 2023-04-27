@@ -45,8 +45,8 @@ for i=1:length(find(idx==1));
 
     md=[];
     if isempty(data(temp(i)).Rheobase)==0
-     if isempty(find(data(temp(i)).Rheobase.spikecount>=2))==0
-    md=find(data(temp(i)).Rheobase.spikecount>=2);
+     if isempty(find(data(temp(i)).Rheobase.spikecount(1:size(data(temp(i)).Rheobase.traces,2))>=2))==0
+    md=find(data(temp(i)).Rheobase.spikecount(1:size(data(temp(i)).Rheobase.traces,2))>=2);
     trace(:,i)=data(temp(i)).Rheobase.traces(:,md(1));
      sp_time=[];
     diff_idx=[];
@@ -57,7 +57,7 @@ for i=1:length(find(idx==1));
     sp_time=d_tr(diff_idx+1);
     spike_time(i)=sp_time(1);
    else
-      md=find(data(temp(i)).Rheobase.spikecount>=1);
+      md=find(data(temp(i)).Rheobase.spikecount(1:size(data(temp(i)).Rheobase.traces,2))>=1);
     trace(:,i)=data(temp(i)).Rheobase.traces(:,md(1));
     sp_time=[];
     diff_idx=[];

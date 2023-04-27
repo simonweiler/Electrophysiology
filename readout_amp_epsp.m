@@ -26,7 +26,7 @@ if stim_type==1
    if length(amp)>=2 & any(~isnan(amp))==1
    epsp(i)=max(amp(find(~isnan(amp))));
            else
-               epsp(i)=NaN;
+               epsp(i)=max(amp);
            end
        else
            epsp(i)=NaN;
@@ -54,7 +54,7 @@ elseif stim_type==2
            if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
            else
-               epsp(i)=amp;
+               epsp(i)=max(amp);
            end
        else
            epsp(i)=NaN;
@@ -80,7 +80,7 @@ else stim_type==3
   if length(amp)>=2
    epsp(i)=max(amp(find(~isnan(amp))));
            else
-               epsp(i)=NaN;
+               epsp(i)=max(amp);
            end
        else
            epsp(i)=NaN;
