@@ -20,6 +20,7 @@ addParameter(p, 'geno', nan);
 addParameter(p, 'drugs', nan);
 addParameter(p, 'optovariant', nan);
 addParameter(p, 'layer', nan);
+addParameter(p, 'qualityinput', nan);
 % % filters based on QC sheet
 % addParameter(p, 'transduction_QC', 1); % 
 % addParameter(p, 'Conf_QC', nan);
@@ -123,6 +124,9 @@ for k = 1:length(fn)
         filters_array(k,:) = temp_filter;
           elseif strcmp(fn{k},'layer')
        temp_filter = cellfun(@(x) all(cell_filters.layer==x),{data2.(fn{k})});
+        filters_array(k,:) = temp_filter;
+           elseif strcmp(fn{k},'qualityinput')
+       temp_filter = cellfun(@(x) all(cell_filters.qualityinput==x),{data2.(fn{k})});
         filters_array(k,:) = temp_filter;
     else
         temp_filter = cellfun(@(x) all(cell_filters.(fn{k})==x),{data2.(fn{k})});

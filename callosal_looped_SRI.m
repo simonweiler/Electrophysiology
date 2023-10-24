@@ -83,24 +83,7 @@ vip_ratios(:,i)=vip_er;
 end
 %% combine PENK and CCi
 cci_all=[cci_ratios ;penk_ratios];
-%% example 
-tempd=[];tempd2=[];
-col=1;
-tempd=[cci_cpnk(length(cci_k):end,col);penk_cpncs(:,col);penk_cpnk(:,col)];
-tempd2=[cci_k(:,col);penk_cs(:,col);penk_k(:,col)];
-data=[];data=[tempd tempd2];
-paired_plot_box(data,{'g','m'});
-xticklabels({'Looped CCc','Non Looped CCi'});
-ylabel('Light evoked EPSC amplitude');
-%% 2nd example
-tempd=[];tempd2=[];
-col=1;
-tempd=[vip_cpnk(1:end-1,col)];
-tempd2=[vip_k(1:end-1,col)];
-data=[];data=[tempd tempd2];
-paired_plot_box(data,{'g','m'});
-xticklabels({'Looped CCc','Non Looped CCi'});
-ylabel('Light evoked EPSC amplitude');
+
 %% check all statistically
 %define which pulses
 col=7;col2=8;%thrs=1000;
@@ -137,11 +120,14 @@ vip_data2=[[vip_cpncs(:,col2) ;vip_cpnk(:,col2)] [vip_cs(:,col2) ;vip_k(:,col2)]
 %col: 1 4 7 are excitatory 1, 10 or 25 Hz
 %col: 2 5 8 are inhbitory 1, 10 or 25 Hz
 
+%col=[1 4 7];
 col=[2 5 8];
 
 %Ntsr1 aka CT
 [ct_m ct_i]=max([ntsr_cpncs(:,col) ;ntsr_cpnk(:,col)],[],2);
+%[ct_m ct_i]=max([ntsr_cs(:,col) ;ntsr_k(:,col)],[],2);
 ct_temp=[ntsr_cs(:,col) ;ntsr_k(:,col)];
+%ct_temp=[ntsr_cpncs(:,col) ;ntsr_cpnk(:,col)];
 ct_r=[ntsr_ratios(:,col)];
 ct_m2=[];
 ct_cri=[];
@@ -153,19 +139,24 @@ for i=1:length(ct_temp)
 end
 ct_data=[];
 ct_data=[ct_m ct_m2'];
+%% 
 
 %Penk and non CT non CPN
-[cc_m cc_i]=max([penk_cpncs(:,col) ;penk_cpnk(:,col); cci_cpnk(length(cci_k):end,col)],[],2)
+%[cc_m cc_i]=max([penk_cpncs(:,col) ;penk_cpnk(:,col); cci_cpnk(length(cci_k):end,col)],[],2);
+[cc_m cc_i]=max([penk_cpncs(:,col) ;penk_cpnk(:,col); cci_cpnk(:,col)],[],2);
+%[cc_m cc_i]=max([penk_cs(:,col) ;penk_k(:,col); cci_k(length(cci_k):end,col)],[],2);
 cc_temp=[penk_cs(:,col) ;penk_k(:,col); cci_k(:,col)];
+%cc_temp=[penk_cpncs(:,col) ;penk_cpnk(:,col); cci_cpnk(:,col)];
 cc_r=[cci_all(:,col)];
 cc_m2=[];
 cc_cri=[];
-for i=1:length(cc_temp)
+for i=1:length(cc_i)
     cc_m2(i)=cc_temp(i,cc_i(i));
     cc_cri(i)=cc_r(i,cc_i(i));
 end
 cci_data=[];
 cci_data=[cc_m cc_m2'];
+%% 
 
 %PV
 [pv_m pv_i]=max([pv_cpncs(:,col) ;pv_cpnk(:,col)],[],2);
@@ -179,6 +170,7 @@ for i=1:length(pv_temp)
 end
 pv_data=[];
 pv_data=[pv_m pv_m2'];
+%% 
 
 %SOM
 [som_m som_i]=max([som_cpncs(:,col) ;som_cpnk(:,col)],[],2);
@@ -192,6 +184,7 @@ for i=1:length(som_temp)
 end
 som_data=[];
 som_data=[som_m som_m2'];
+%% 
 
 %VIP
 [vip_m vip_i]=max([vip_cpncs(:,col) ;vip_cpnk(:,col)],[],2);
@@ -213,6 +206,25 @@ vip_data=[vip_m vip_m2'];
 [p_pv]=ranksum(pv_data(:,1) ,pv_data(:,2))
 [p_som]=ranksum(som_data(:,1) ,som_data(:,2))
 [p_vip]=ranksum(vip_data(:,1) ,vip_data(:,2))
+%% OTHER OPTION USE MEAN ACROSS 1, 5 and 10 Hz
+col=[2 5 8];
+ct_avg3=[];cc_avg3=[];pv_avg3=[];som_avg3=[];vip_avg3=[];
+ct_avg3=[nanmean([ntsr_cpncs(:,col) ;ntsr_cpnk(:,col)],2) nanmean([ntsr_cs(:,col) ;ntsr_k(:,col)],2)];
+[p_ct]=ranksum(ct_avg3(:,1) ,ct_avg3(:,2))
+cc_avg3=[nanmean([penk_cpncs(:,col) ;penk_cpnk(:,col); cci_cpnk(:,col)],2) nanmean([penk_cs(:,col) ;penk_k(:,col); cci_k(:,col)],2)]
+[p_cc]=ranksum(cc_avg3(:,1) ,cc_avg3(:,2))
+pv_avg3=[nanmean([pv_cpncs(:,col) ;pv_cpnk(:,col)],2) nanmean([pv_cs(:,col) ;pv_k(:,col)],2)];
+[p_pv]=ranksum(pv_avg3(:,1) ,pv_avg3(:,2))
+som_avg3=[nanmean([som_cpncs(:,col) ;som_cpnk(:,col)],2) nanmean([som_cs(:,col) ;som_k(:,col)],2)];
+[p_som]=ranksum(som_avg3(:,1) ,som_avg3(:,2))
+vip_avg3=[nanmean([vip_cpncs(:,col) ;vip_cpnk(:,col)],2) nanmean([vip_cs(:,col) ;vip_k(:,col)],2)];
+[p_vip]=ranksum(vip_avg3(:,1) ,vip_avg3(:,2))
+%% 
+ct_cri=[];ct_cri=(ct_avg3(:,2)-ct_avg3(:,1))./(ct_avg3(:,2)+ct_avg3(:,1));
+cc_cri=[];cc_cri=(cc_avg3(:,2)-cc_avg3(:,1))./(cc_avg3(:,2)+cc_avg3(:,1));
+pv_cri=[];pv_cri=(pv_avg3(:,2)-pv_avg3(:,1))./(pv_avg3(:,2)+pv_avg3(:,1));
+som_cri=[];som_cri=(som_avg3(:,2)-som_avg3(:,1))./(som_avg3(:,2)+som_avg3(:,1));
+vip_cri=[];vip_cri=(vip_avg3(:,2)-vip_avg3(:,1))./(vip_avg3(:,2)+vip_avg3(:,1));
 %% Violin plots for CRI
 g1=[];g2=[];g3=[];g4=[];g5=[];
 p1=[];p2=[];p3=[];p4=[];p5=[];

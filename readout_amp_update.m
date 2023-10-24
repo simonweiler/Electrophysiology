@@ -23,21 +23,37 @@ if stim_type==1
            if sol==2
                try
           if max(str(temp(i)).sub_traces_train(1:1*sr,ind2))>max(str(temp(i)).sub_traces_train(1:1*sr,ind1))==1
-         epsc(i)=max(abs(str(temp(i)).train_n(:,ind1)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:,ind2)));
+         epsc(i)=max(abs(str(temp(i)).train_n(1,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(1,ind2)));
           else
-         epsc(i)=max(abs(str(temp(i)).train_n(:,ind2)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:,ind1)));
+         epsc(i)=max(abs(str(temp(i)).train_n(1,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).train_p(1,ind1)));
           end
               catch 
-%          epsc(i)=max(abs(str(temp(i)).train_n(:)));
-%          ipsc(i)=max(abs(str(temp(i)).train_p(:))); 
-            epsc(i)=0;
-            ipsc(i)=0; 
-             end
+         
+                if sum(abs(str(temp(i)).train_n(:,1)))>sum(abs(str(temp(i)).train_p(:,1)))==1
+                    epsc(i)=max(abs(str(temp(i)).train_n(1,1)));
+                    ipsc(i)=NaN; 
+                else
+                    ipsc(i)=max(abs(str(temp(i)).train_p(1,1)));
+                    epsc(i)=NaN;
+                end
+           
+             
+               end
+%% 
+
           else sol==1
-         epsc(i)=max(abs(str(temp(i)).train_n(:)));
-         ipsc(i)=max(abs(str(temp(i)).train_p(:)));  
+          try   
+         epsc(i)=max(abs(str(temp(i)).train_n(1,find(str(temp(i)).clamp1==0))));
+          catch
+              epsc(i)=NaN;
+          end
+        try
+         ipsc(i)=max(abs(str(temp(i)).train_p(1,find(str(temp(i)).clamp1==1))));  
+        catch
+            ipsc(i)=NaN;
+        end
            end
        else
            epsc(i)=NaN;
@@ -45,6 +61,7 @@ if stim_type==1
        end
     end
 
+%% 
 
 %2:read out high freq stimulus (25, short pulses)   
 elseif stim_type==2
@@ -55,24 +72,24 @@ elseif stim_type==2
       try
      if max(str(temp(i)).sub_traces_high(1:1*sr,ind2))>max(str(temp(i)).sub_traces_high(1:1*sr,ind1))==1
          if sum(str(temp(i)).high_n(:,ind1)~=0)>thr==1
-         epsc(i)=max(abs(str(temp(i)).high_n(:,ind1)));
+         epsc(i)=max(abs(str(temp(i)).high_n(1,ind1)));
          else
          epsc(i)=0;    
          end
           if sum(str(temp(i)).high_p(:,ind2)~=0)>thr==1
-         ipsc(i)=max(abs(str(temp(i)).high_p(:,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(1,ind2)));
           else
           ipsc(i)=0;
           end
 
      else
          if sum(str(temp(i)).high_n(:,ind2)~=0)>thr==1
-         epsc(i)=max(abs(str(temp(i)).high_n(:,ind2)));
+         epsc(i)=max(abs(str(temp(i)).high_n(1,ind2)));
          else
          epsc(i)=0;   
          end
          if sum(str(temp(i)).high_p(:,ind1)~=0)>thr==1
-         ipsc(i)=max(abs(str(temp(i)).high_p(:,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).high_p(1,ind1)));
          else
          ipsc(i)=0;
          end
@@ -80,12 +97,12 @@ elseif stim_type==2
 
        catch 
          if sum(str(temp(i)).high_n(:)~=0)>thr==1  
-         epsc(i)=max(abs(str(temp(i)).high_n(:)));
+         epsc(i)=max(abs(str(temp(i)).high_n(1,1)));
          else
          epsc(i)=0;
          end
          if sum(str(temp(i)).high_p(:)~=0)>thr==1  
-         ipsc(i)=max(abs(str(temp(i)).high_p(:))); 
+         ipsc(i)=max(abs(str(temp(i)).high_p(1,1))); 
          else
          ipsc(i)=0;
          end
@@ -93,12 +110,21 @@ elseif stim_type==2
 %K gluc             
       else sol==1
          if sum(str(temp(i)).high_n(:)~=0)>thr==1 
-         epsc(i)=max(abs(str(temp(i)).high_n(:)));
+             try
+             epsc(i)=max(abs(str(temp(i)).high_n(1,find(str(temp(i)).clamp3==0))));
+             catch
+             epsc(i)=NaN;
+             end
+         %epsc(i)=max(abs(str(temp(i)).high_n(:)));
          else
          epsc(i)=0;
          end
          if sum(str(temp(i)).high_p(:)~=0)>thr==1 
-         ipsc(i)=max(abs(str(temp(i)).high_p(:)));  
+         try
+         ipsc(i)=max(abs(str(temp(i)).high_p(1,find(str(temp(i)).clamp3==1))));  
+         catch
+          ipsc(i)=NaN;
+         end
          else
          ipsc(i)=0;
          end
@@ -109,7 +135,8 @@ elseif stim_type==2
          ipsc(i)=NaN;  
         end
     end
-%3:read out highest freq stimulus (50, short pulses)   
+%3:read out highest freq stimulus (50, short pulses)  
+
 else stim_type==3
     for i=1:length(find(cells_idx==1));   
       if isempty(str(temp(i)).highf_n)==0;
@@ -118,24 +145,24 @@ else stim_type==3
       try
      if max(str(temp(i)).sub_traces_highf(1:1*sr,ind2))>max(str(temp(i)).sub_traces_highf(1:1*sr,ind1))==1
          if sum(str(temp(i)).highf_n(:,ind1)~=0)>thr==1
-         epsc(i)=max(abs(str(temp(i)).highf_n(:,ind1)));
+         epsc(i)=max(abs(str(temp(i)).highf_n(1,ind1)));
          else
          epsc(i)=0;    
          end
           if sum(str(temp(i)).highf_p(:,ind2)~=0)>thr==1
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:,ind2)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(1,ind2)));
           else
           ipsc(i)=0;
           end
 
      else
          if sum(str(temp(i)).highf_n(:,ind2)~=0)>thr==1
-         epsc(i)=max(abs(str(temp(i)).highf_n(:,ind2)));
+         epsc(i)=max(abs(str(temp(i)).highf_n(1,ind2)));
          else
          epsc(i)=0;   
          end
          if sum(str(temp(i)).highf_p(:,ind1)~=0)>thr==1
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:,ind1)));
+         ipsc(i)=max(abs(str(temp(i)).highf_p(1,ind1)));
          else
          ipsc(i)=0;
          end
@@ -143,12 +170,12 @@ else stim_type==3
 
        catch 
          if sum(str(temp(i)).highf_n(:)~=0)>thr==1  
-         epsc(i)=max(abs(str(temp(i)).highf_n(:)));
+         epsc(i)=max(abs(str(temp(i)).highf_n(1,1)));
          else
          epsc(i)=0;
          end
          if sum(str(temp(i)).highf_p(:)~=0)>thr==1  
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:))); 
+         ipsc(i)=max(abs(str(temp(i)).highf_p(1,1))); 
          else
          ipsc(i)=0;
          end
@@ -156,12 +183,22 @@ else stim_type==3
 %K gluc             
       else sol==1
          if sum(str(temp(i)).highf_n(:)~=0)>thr==1 
-         epsc(i)=max(abs(str(temp(i)).highf_n(:)));
+             try
+             epsc(i)=max(abs(str(temp(i)).high_n(1,find(str(temp(i)).clamp4==0))));
+             catch
+             epsc(i)=NaN;
+             end
+         %epsc(i)=max(abs(str(temp(i)).highf_n(:)));
          else
          epsc(i)=0;
          end
          if sum(str(temp(i)).highf_p(:)~=0)>thr==1 
-         ipsc(i)=max(abs(str(temp(i)).highf_p(:)));  
+         try
+         ipsc(i)=max(abs(str(temp(i)).high_p(1,find(str(temp(i)).clamp4==1))));  
+         catch
+          ipsc(i)=NaN;
+         end
+         %ipsc(i)=max(abs(str(temp(i)).highf_p(:)));  
          else
          ipsc(i)=0;
          end

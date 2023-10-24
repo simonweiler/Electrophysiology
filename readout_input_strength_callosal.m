@@ -6,180 +6,206 @@ function [ntsr_cs_cells ntsr_cpncs_cells ntsr_k_cells ntsr_cpnk_cells ...
 %CS NTSR1 paired (no drugs and before washin)
 temp1=[];ntsr_cs1=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cs1=sum(temp1);
 temp1=[];ntsr_cs2=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cs2=sum(temp1);
 ntsr_cs=[];
 ntsr_cs=ntsr_cs1+ntsr_cs2;
+disp([num2str(sum(ntsr_cs)) ' ntsr_cs cells, nr ' num2str(find(ntsr_cs==1))])
 
 %CS NTSR1 paired (no drugs and before washin) CORRESPONDING CPN cells
 temp1=[];ntsr_cpncs1=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cpncs1=sum(temp1);
 %
 temp1=[];ntsr_cpncs2=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',1,'geno',6,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',1,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cpncs2=sum(temp1);
 ntsr_cpncs=[];
 ntsr_cpncs=ntsr_cpncs1+ntsr_cpncs2;
+disp([num2str(sum(ntsr_cpncs)) ' ntsr_cpncs cells, nr ' num2str(find(ntsr_cpncs==1))])
 %remove cell 253 from ntsr1 cause its pair is with TTX
 ntsr_cs(253)=0;
-
+disp([num2str(sum(ntsr_cs)) ' updated ntsr_cs cells, nr ' num2str(find(ntsr_cs==1))])
 
 %same for K
 %CS NTSR1 paired (no drugs and before washin)
 temp1=[];ntsr_k1=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 ntsr_k1=sum(temp1);
 
 temp1=[];ntsr_k2=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 ntsr_k2=sum(temp1);
 ntsr_k=[];
 ntsr_k=ntsr_k1+ntsr_k2;
+disp([num2str(sum(ntsr_k)) ' ntsr_k cells, nr ' num2str(find(ntsr_k==1))])
 
-%CS NTSR1 paired (no drugs and before washin) CORRESPONDING CPN cells
+%K NTSR1 paired (no drugs and before washin) CORRESPONDING CPN cells
 temp1=[];ntsr_cpnk1=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 ntsr_cpnk1=sum(temp1);
 %
 temp1=[];ntsr_cpnk2=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',1,'geno',6,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',1,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 ntsr_cpnk2=sum(temp1);
 ntsr_cpnk=[];
 ntsr_cpnk=ntsr_cpnk1+ntsr_cpnk2;
-%remove cell 259 and 261 from ntsr1 cause its pair is with TTX
+disp([num2str(sum(ntsr_cpnk)) ' ntsr_cpnk cells, nr ' num2str(find(ntsr_cpnk==1))])
+%remove cells that are paired with unlabelled
+ntsr_cpnk([179 181 183 185 187 189 191 218 221 223 225 228])=0;
+disp([num2str(sum(ntsr_cpnk)) ' updated ntsr_cpnk cells, nr ' num2str(find(ntsr_cpnk==1))])
+%remove cell 259 and 261, 329 from ntsr1 cause its pair is with TTX
 ntsr_k([259 261 329])=0;
+disp([num2str(sum(ntsr_k)) ' updated ntsr_k cells, nr ' num2str(find(ntsr_k==1))])
 %% PENK
 %CS
 temp1=[];penk_cs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',2,'qualityinput',1,'pair',i);
 end
 penk_cs=sum(temp1);
+disp([num2str(sum(penk_cs)) ' penk_cs cells, nr ' num2str(find(penk_cs==1))])
 %K
 temp1=[];penk_k=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',1,'qualityinput',1,'pair',i);
 end
 penk_k=sum(temp1);
+disp([num2str(sum(penk_k)) ' penk_k cells, nr ' num2str(find(penk_k==1))])
 
 %Penk CPN
 %CS
 temp1=[];penk_cpncs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',7,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',7,'sol',2,'qualityinput',1,'pair',i);
 end
 penk_cpncs=sum(temp1);
+disp([num2str(sum(penk_cpncs)) ' penk_cpncs cells, nr ' num2str(find(penk_cpncs==1))])
+
 %K
 temp1=[];penk_cpnk=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',7,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',7,'sol',1,'qualityinput',1,'pair',i);
 end
 penk_cpnk=sum(temp1);
+disp([num2str(sum(penk_cpnk)) ' penk_cpnk cells, nr ' num2str(find(penk_cpnk==1))])
 %% Unlabelled excitatry cell in ntsr1 animal (additional to Penk CCi) only K solution
 %CCiK
 %K
 temp1=[];cci_k=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',0,'geno',6,'sol',1,'optovariant',0,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',0,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 cci_k=sum(temp1);
+disp([num2str(sum(cci_k)) ' cci_k cells, nr ' num2str(find(cci_k==1))])
 %K
 temp1=[];cci_cpnk=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',1,'optovariant',0,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',6,'sol',1,'qualityinput',1,'pair',i);
 end
 cci_cpnk=sum(temp1);
-
+disp([num2str(sum(cci_cpnk)) ' cci_cpnk cells, nr ' num2str(find(cci_cpnk==1))])
+cci_cpnk([171 175 177 179 238  240  242  331  332  335  338  340  342  345])=0;
+disp([num2str(sum(cci_cpnk)) ' updated cci_cpnk cells, nr ' num2str(find(cci_cpnk==1))])
 %% SOM cells 
 %CS
 temp1=[];som_cs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',2,'qualityinput',1,'pair',i);
 end
 som_cs=sum(temp1);
+disp([num2str(sum(som_cs)) ' som_cs cells, nr ' num2str(find(som_cs==1))])
 %K
 temp1=[];som_k=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',1,'qualityinput',1,'pair',i);
 end
 som_k=sum(temp1);
+disp([num2str(sum(som_k)) ' som_cs cells, nr ' num2str(find(som_k==1))])
+
 
 %SOM CPN
 %CS
 temp1=[];som_cpncs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',8,'sol',2,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',8,'sol',2,'qualityinput',1,'pair',i);
 end
 som_cpncs=sum(temp1);
+disp([num2str(sum(som_cpncs)) ' som_cpncs cells, nr ' num2str(find(som_cpncs==1))])
 %K
 temp1=[];som_cpnk=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',8,'sol',1,'optovariant',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',8,'sol',1,'qualityinput',1,'pair',i);
 end
 som_cpnk=sum(temp1);
-
+disp([num2str(sum(som_cpnk)) ' som_cpnk cells, nr ' num2str(find(som_cpnk==1))])
 %% PV cells 
 %CS
 temp1=[];pv_cs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',3,'geno',5,'sol',2,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',3,'geno',5,'sol',2,'qualityinput',1,'pair',i);
 end
 pv_cs=sum(temp1);
+disp([num2str(sum(pv_cs)) ' pv_cs cells, nr ' num2str(find(pv_cs==1))])
 %K
 temp1=[];pv_k=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',3,'geno',5,'sol',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',3,'geno',5,'sol',1,'qualityinput',1,'pair',i);
 end
 pv_k=sum(temp1);
+disp([num2str(sum(pv_k)) ' pv_k cells, nr ' num2str(find(pv_k==1))])
 
 %PV CPN
 %CS
 temp1=[];pv_cpncs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',5,'sol',2,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',5,'sol',2,'qualityinput',1,'pair',i);
 end
 pv_cpncs=sum(temp1);
+disp([num2str(sum(pv_cpncs)) ' pv_cpncs cells, nr ' num2str(find(pv_cpncs==1))])
 %K
 temp1=[];pv_cpnk=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',5,'sol',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',5,'sol',1,'qualityinput',1,'pair',i);
 end
 pv_cpnk=sum(temp1);
+disp([num2str(sum(pv_cpnk)) ' pv_cpnk cells, nr ' num2str(find(pv_cpnk==1))])
 %remove cell 195 and 200 from ntsr1 cause its pair is with TTX
 pv_k([195 200])=0;
-
+disp([num2str(sum(pv_k)) ' updated pv_k cells, nr ' num2str(find(pv_k==1))])
 %% VIP cells
 %CS
 temp1=[];vip_cs=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',2,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',2,'qualityinput',1,'pair',i);
 end
 vip_cs=sum(temp1);
+disp([num2str(sum(vip_cs)) ' vip_cs cells, nr ' num2str(find(vip_cs==1))])
 %K
 temp1=[];vip_k=[];
 for i=1:6
-temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',1,'pair',i);
+temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',1,'qualityinput',1,'pair',i);
 end
 vip_k=sum(temp1);
+disp([num2str(sum(vip_k)) ' vip_k cells, nr ' num2str(find(vip_k==1))])
 
 %VIP CPN
 %CS
@@ -188,12 +214,14 @@ for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',9,'sol',2,'pair',i);
 end
 vip_cpncs=sum(temp1);
+disp([num2str(sum(vip_cpncs)) ' vip_cpncs cells, nr ' num2str(find(vip_cpncs==1))])
 %K
 temp1=[];vip_cpnk=[];
 for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',1,'geno',9,'sol',1,'pair',i);
 end
 vip_cpnk=sum(temp1);
+disp([num2str(sum(vip_cpnk)) ' vip_cpnk cells, nr ' num2str(find(vip_cpnk==1))])
 %%  Read out peaks from train for NTSR CS for train (long), middle frequency (high), highest (highf)
 [ntsr_psc_csl] = readout_amp_update(Ephys,ntsr_cs ,1,2,1,2);
 [ntsr_psc_cshf] = readout_amp_update(Ephys,ntsr_cs ,2,2,1,2);

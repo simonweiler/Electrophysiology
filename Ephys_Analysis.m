@@ -1,35 +1,41 @@
-%Analysis of slice electropysiology Margrie Lab started Spetember 2019
+%% Analysis of slice electropysiology Margrie Lab started Spetember 2019: READ OUTS A DATA STRUCTURE FOR EACH CELL 
 %% NOTES
 %Data information is in excel sheet which can be called by Matlab 
 %Nested functions
-   % parseExperimentsXls_ephys
-   % loadDataFile_wavesurfer
-   % Pandora Toolbox 
-   % spike event
-   
+   % parseExperimentsXls_ephys.m
+   % loadDataFile_wavesurfer.m
+   % ephys_LED.m
+   % Pandora Toolbox.m 
+   % spike event.m
+   % lowpassfilt.m
+
 %% Scripts starts here
 %% 
+%perform CRACM experiments readout
 LED_stim=1;
+%perform intrinsic experiments readout
 intr_prop=1;
+%only use spieligth independent of all other anaylsis (IGNORE FROM NOW)
 spikeligth=0;
+%Manually readout pial depth information
 image_prop=0;
+%Save data structure 
 savefile=1;
-
-
-
 %% Set directories and experimentator
 experimentator= 'SW';
-rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';%data directory of raw data;change accordingly
-adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';%data directory of extracted date;change accordingly
-%adata_dir         = 'G:\slice_ephys';
-%adata_dir         = 'D:\Postdoc_Margrie\Projects\Whisker\output_structure';%data directory of extracted date;change accordingly
-ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list.xlsx';%directory where excel batch file is located;change accordingly
-%ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list_S1V1.xlsx'
+%data directory of raw data;change accordingly
+rdata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\invitro_ephys\Organized';
+%data directory of extracted date;change accordingly
+adata_dir         = 'D:\Postdoc_Margrie\Projects\Callosal\output';
+%directory where excel batch file is located;change accordingly
+ExpXls            = 'C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\slice_ephys_structure\Experiment_list.xlsx'
 %% parse Experiments XLS database
-batchopt          = parseExperimentsXls_ephys(ExpXls);%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
-nummice           = length(batchopt.mouse);%length of experiments to be analyzed
- %% Go through each mouse and recordings iteratively
-    
+%calls the nested function parseExperimentsXls_ephys and considers the user flag (1 or 0)
+batchopt          = parseExperimentsXls_ephys(ExpXls);
+%length of experiments to be analyzed
+nummice           = length(batchopt.mouse);
+ %% Go through each mouse and cell recordings iteratively
+   
 adder=1;%counting variable
  for i=1:nummice%for loop over experiments across days
      datapath=fullfile(rdata_dir, num2str(batchopt.mouse{i}), filesep);%directory and name of experiments (from excel sheet)
@@ -58,7 +64,7 @@ adder=1;%counting variable
             %check which amplifier
             ampli=batchopt.amplifier{i} (k);
             
-              %setting up structure
+             %setting up structure
             Ephys(adder).animal_name=[char(batchopt.mouseID{i})];
             Ephys(adder).patching_date=batchopt.mouse{i};
             Ephys(adder).celID=fold_name;
@@ -76,6 +82,7 @@ adder=1;%counting variable
             Ephys(adder).drugs=batchopt.drugs{i} (k);
             Ephys(adder).layer=batchopt.layer{i} (k);
             Ephys(adder).optovariant=batchopt.optovariant{i} (k);
+            Ephys(adder).qualityinput=batchopt.qualityinput{i} (k);
             
         if LED_stim==1
             %Get LED stimuli of the cell
@@ -375,7 +382,8 @@ adder=1;%counting variable
        % SAVE in analyzed directory
     if savefile==1
         cd(adata_dir);
-        FileName=['Data_',experimentator,'_',datestr(now, 'hh-dd-mmm-yyyy')];
+        formatOut = 'dd mmm yyyy';
+        FileName=['Data_','SW','_',datestr(now,formatOut)];
         %         save(FileName,'-struct','LGN','-v7.3');
         save(FileName,'Ephys','-v7.3');
         disp('FILE SAVED');
