@@ -20,7 +20,7 @@ if stim_type==1
            if isempty(find(str(temp(i)).sub_traces_train(6.24*sr:end,k)<-50))==0
                amp(k)=NaN;
            else isempty(find(str(temp(i)).sub_traces_train(6.24*sr:end,k)<-50))==1
-               amp(k)=max(abs(str(temp(i)).train_p(:,k)));
+               amp(k)=max(abs(str(temp(i)).train_p(1,k)));
            end
            end
    if length(amp)>=2 & any(~isnan(amp))==1
@@ -45,7 +45,7 @@ elseif stim_type==2
                amp(k)=NaN;
            else isempty(find(str(temp(i)).sub_traces_high(6.24*sr:end,k)<-50))==1
                if sum(str(temp(i)).high_p(:,k)~=0)>thr==1
-               amp(k)=max(abs(str(temp(i)).high_p(:,k)));
+               amp(k)=max(abs(str(temp(i)).high_p(1,k)));
                else
                amp(k)=0;
                end
@@ -71,7 +71,7 @@ else stim_type==3
                amp(k)=NaN;
            else isempty(find(str(temp(i)).sub_traces_highf(6.24*sr:end,k)<-50))==1
                if sum(str(temp(i)).highf_p(:,k)~=0)>thr==1
-               amp(k)=max(abs(str(temp(i)).highf_p(:,k)));
+               amp(k)=max(abs(str(temp(i)).highf_p(1,k)));
                else
                amp(k)=0;
                end

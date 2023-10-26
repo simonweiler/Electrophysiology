@@ -1,56 +1,187 @@
 %% FEEDFORWARD INHIBITION
 %which cell types spike upon callosal activation in the slice? : CPN, CT,
 %CCi (Penk and unlablled CCs), PV, SST, VIP, GAD
+%% 
+
+save_folder='C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\SfN2023\Figures';
 %% Load data structure 
 str_L6    = 'D:\Postdoc_Margrie\Projects\Callosal\output';
 folder_list = uipickfiles('FilterSpec',str_L6);
 load(char(folder_list));
 %sampling rate
-srF=20;
-sr=20000;
+srF=20;sr=20000;
+%% EPSC ISPC timing comparison CP and CT
+%readout all cells type for timw windowing epsc ipsc
+  cp_psc1=cell_selecter(Ephys,'drugs',0,'label',1,'sol',2,'qualityinput',1);
+  cp_psc2=cell_selecter(Ephys,'drugs',1,'label',1,'sol',2,'qualityinput',1);
+  cp_psc=[];cp_psc=cp_psc1+cp_psc2;
+%readout amplitude if EPSC and IPSC
+[cp_amp] = readout_amp_update(Ephys,cp_psc ,1,2,1,2);
+% Time to peak ex and in for retro cells using first pulse of long train 
+%CPN
+%% 
+rsp_window=[];
+rsp_window=[5001:1:6000];
+fc_1=7;
+[time_cp1] = timing_readout(Ephys, cp_psc, cp_amp(:,3), fc_1, 1,1,rsp_window);
+%% 
+[time_cp2] = timing_readout(Ephys, cp_psc, cp_amp(:,3), fc_1, 1,2,rsp_window);
+%% 
+[time_cp3] = timing_readout(Ephys, cp_psc, cp_amp(:,3), fc_1, 1,3,rsp_window);
+%%  Exclude cells with 25 ms and take the average of the first pulse across 1 , 5 and 10 Hz CP
+time_cp1(find(time_cp1(:,1)>25),1)=NaN;
+time_cp2(find(time_cp2(:,1)>25),1)=NaN;
+time_cp3(find(time_cp3(:,1)>25),1)=NaN;
+ex_temp_cp=[time_cp1(:,1) time_cp2(:,1) time_cp3(:,1)];
+time_cp=[nanmean([time_cp1(:,1) time_cp2(:,1) time_cp3(:,1)],2) nanmean([time_cp1(:,2) time_cp2(:,2) time_cp3(:,2)],2) (time_cp1(:,3))];
+time_cpstd=[nanstd([time_cp1(:,1) time_cp2(:,1) time_cp3(:,1)],[],2) nanstd([time_cp1(:,2) time_cp2(:,2) time_cp3(:,2)],[],2) (time_cp1(:,3))];
+cp_avg=[];cp_avg=time_cp(find(sum(~isnan(ex_temp_cp),2)>1),[1 2 3]);
+
+%% Plot bar plot comparison
+%only include cells that have more than 1 ms EPSC (sone have indee shorter
+%ones which are then direct?)
+data=[];data=cp_avg(find(cp_avg(:,1)>1),[1 2]);
+
+cl={'r','b'};
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');
+%statistics 
+%test for normality: 
+set(gca,'FontSize',11);set(gca,'TickDir','out');
+%pvalue of paired signrank test: 
+[p1]=signrank(time_cp(:,1),time_cp(:,2))
+%% add asteriks
+title('');text(1,20,'***','FontSize',18,'FontWeight','normal');
+%% SAVE
+cd(save_folder);saveas(gcf, 'CP_EPSC_IPSC_onset.pdf');
+
+%% %readout all cells type for timw windowing epsc ipsc
+  ct_psc1=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',2,'qualityinput',1);
+  ct_psc2=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',2,'qualityinput',1);
+  ct_psc=[];ct_psc=ct_psc1+ct_psc2;
+%readout amplitude if EPSC and IPSC
+[ct_amp] = readout_amp_update(Ephys,ct_psc ,1,2,1,2);
+% Time to peak ex and in for retro cells using first pulse of long train 
+%CPN
+%% 
+rsp_window=[];
+rsp_window=[5001:1:6000];
+%rsp_window=[25001:1:26000];
+
+fc_1=7;
+[time_ct1]=[];
+[time_ct1] = timing_readout(Ephys, ct_psc, ct_amp(:,3), fc_1, 1,1,rsp_window);
+%% 
+[time_ct2] = timing_readout(Ephys, ct_psc, ct_amp(:,3), fc_1, 1,2,rsp_window);
+%% 
+
+[time_ct3] = timing_readout(Ephys, ct_psc, ct_amp(:,3), fc_1, 1,3,rsp_window);
+%% Exclude cells with 25 ms and take the average of the first pulse across 1 , 5 and 10 Hz CT
+time_ct1(find(time_ct1(:,1)>25),1)=NaN;
+time_ct2(find(time_ct2(:,1)>25),1)=NaN;
+time_ct3(find(time_ct3(:,1)>25),1)=NaN;
+ex_temp_ct=[time_ct1(:,1) time_ct2(:,1) time_ct3(:,1)];
+time_ct=[nanmean([time_ct1(:,1) time_ct2(:,1) time_ct3(:,1)],2) nanmean([time_ct1(:,2) time_ct2(:,2) time_ct3(:,2)],2) (time_ct1(:,3))];
+time_ctstd=[nanstd([time_ct1(:,1) time_ct2(:,1) time_ct3(:,1)],[],2) nanstd([time_ct1(:,2) time_ct2(:,2) time_ct3(:,2)],[],2) (time_ct1(:,3))];
+ct_avg=[];ct_avg=time_ct(find(sum(~isnan(ex_temp_ct),2)>1),[1 2 3]);
+
+%% Plot CT EPSC IPSC onset delay
+data=[];data=ct_avg(find(ct_avg(:,1)>1),[1 2]);
+cl={'r','b'};
+paired_plot_box(data,cl);
+xticklabels({'EX','IN'});ylabel('Onset Latency (ms)');
+%statistics 
+%test for normality: 
+set(gca,'FontSize',11);set(gca,'TickDir','out');
+%pvalue of paired signrank test: 
+[p1]=signrank(time_ct(:,1),time_ct(:,2));ylim([0 20])
+%% add asteriks
+title('');text(1,20,'**','FontSize',18,'FontWeight','normal');
+%% SAVE CT
+cd(save_folder);saveas(gcf, 'CT_EPSC_IPSC_onset.pdf');
+
+
+
 %% Read out all EPSPs across cell types
-
+%Interneurons 
 stim_type=1;
-
 %PV
-pv_k_cells=cell_selecter(Ephys,'drugs',0,'label',3,'sol',1);
+pv_k_cells=cell_selecter(Ephys,'drugs',0,'label',3,'sol',1,'qualityinput',1);
 epsp_pv=[];
 [epsp_pv] = readout_amp_epsp(Ephys,pv_k_cells,stim_type,sr);
-
-% CPN
-cpn_k_cells=cell_selecter(Ephys,'drugs',0,'label',1,'sol',1);
-[epsp_cpn]=[];
-[epsp_cpn] = readout_amp_epsp(Ephys,cpn_k_cells,stim_type,sr);
-
-% Ntsr1
-ntsr_k_cells=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',1);
-[epsp_ntsr]=[];
-[epsp_ntsr] = readout_amp_epsp(Ephys,ntsr_k_cells,stim_type,sr);
-
-% Penk
-penk_k_cells=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',1);
-[epsp_penk]=[];
-[epsp_penk] = readout_amp_epsp(Ephys,penk_k_cells,stim_type,sr); 
-
-% Unlabelled excitatry cell in ntsr1 animal (additional to Penk CCi) only K solution
-cci_k_cells=cell_selecter(Ephys,'drugs',0,'label',0,'geno',6,'sol',1);
-[epsp_cci]=[];
-[epsp_cci] = readout_amp_epsp(Ephys,cci_k_cells,stim_type,sr); 
-
+disp([num2str(length(find(epsp_pv>45))) ' PV cells of ' num2str(length(epsp_pv)) ' spiked'])
+%
 % SOM
-som_k_cells=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',1,'optovariant',1);
+som_k_cells=cell_selecter(Ephys,'drugs',0,'label',6,'geno',8,'sol',1,'qualityinput',1);
 [epsp_som]=[];
 [epsp_som] = readout_amp_epsp(Ephys,som_k_cells,stim_type,sr);
-
+disp([num2str(length(find(epsp_som>45))) ' SST cells of ' num2str(length(epsp_som)) ' spiked'])
+%
+% read out all GAD
+in_k_cells=cell_selecter(Ephys,'drugs',0,'label',2,'sol',1,'qualityinput',1);
+[epsp_gad]=[];
+[epsp_gad] = readout_amp_epsp(Ephys,in_k_cells,stim_type,sr);
+disp([num2str(length(find(epsp_gad>45))) ' GAD cells of ' num2str(length(epsp_gad)) ' spiked'])
+%
 % VIP
 vip_k_cells=cell_selecter(Ephys,'drugs',0,'label',8,'geno',9,'sol',1,'optovariant',1);
 [epsp_vip]=[];
 [epsp_vip] = readout_amp_epsp(Ephys,vip_k_cells,stim_type,sr);
+disp([num2str(length(find(epsp_vip>45))) ' VIP cells of ' num2str(length(epsp_vip)) ' spiked'])
+%% Excitatry PNS
+% CPN
+cpn_k_cells=cell_selecter(Ephys,'drugs',0,'label',1,'sol',1,'qualityinput',1);
+[epsp_cpn]=[];
+[epsp_cpn] = readout_amp_epsp(Ephys,cpn_k_cells,stim_type,sr);
+disp([num2str(length(find(epsp_cpn>45))) ' CP cells of ' num2str(length(epsp_cpn)) ' spiked'])
 
-% read out all GAD
-in_k_cells=cell_selecter(Ephys,'drugs',0,'label',2,'sol',1);
-[epsp_gad]=[];
-[epsp_gad] = readout_amp_epsp(Ephys,in_k_cells,stim_type,sr);
+% Ntsr1
+ntsr_k_cells=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',1,'qualityinput',1);
+[epsp_ntsr]=[];
+[epsp_ntsr] = readout_amp_epsp(Ephys,ntsr_k_cells,stim_type,sr);
+disp([num2str(length(find(epsp_ntsr>45))) ' CT cells of ' num2str(length(epsp_ntsr)) ' spiked'])
+
+% Penk
+penk_k_cells=cell_selecter(Ephys,'drugs',0,'label',5,'geno',7,'sol',1,'qualityinput',1);
+[epsp_penk]=[];
+[epsp_penk] = readout_amp_epsp(Ephys,penk_k_cells,stim_type,sr); 
+disp([num2str(length(find(epsp_penk>45))) ' Penk cells of ' num2str(length(epsp_penk)) ' spiked'])
+
+% Unlabelled excitatry cell in ntsr1 animal (additional to Penk CCi) only K solution
+cci_k_cells=cell_selecter(Ephys,'drugs',0,'label',0,'geno',6,'sol',1,'qualityinput',1);
+[epsp_cci]=[];
+[epsp_cci] = readout_amp_epsp(Ephys,cci_k_cells,stim_type,sr); 
+disp([num2str(length(find(epsp_cci>45))) ' CCI cells of ' num2str(length(epsp_cci)) ' spiked'])
+%% Display fraction per cell type
+fig6= figure;set(fig6, 'Name', 'compare fraction spiking');set(fig6, 'Position', [200, 300, 300, 250]);set(gcf,'color','w');
+gr_m=[(length(find(epsp_cpn>45))/length(epsp_cpn))*100  length(find(epsp_ntsr>45))/length(epsp_ntsr)*100 (length(find(epsp_penk>45))+length(find(epsp_cci>45)))/(length(epsp_penk)+length(epsp_cci))*100 ...
+   NaN length(find(epsp_gad>45))/length(epsp_gad)*100 length(find(epsp_pv>45))/length(epsp_pv)*100 ...
+    length(find(epsp_som>45))/length(epsp_som)*100 length(find(epsp_vip>45))/length(epsp_vip)*100];  
+col_m=[([0 166 156]./256);([235 0 139]./256);([190 30 45]./256);([180 180 180]./256);([180 180 180]./256);([246 146 30]./256);([27 117 187]./256);([0 165 81]./256)];
+for i=1:3
+b=bar(i,gr_m(i));b.EdgeColor=col_m(i,:);b.FaceAlpha=0;b.LineWidth=1.5;
+hold on;
+text(i,round(gr_m(i),0),[num2str(round(gr_m(i),0)) '%'],'vert','bottom','horiz','center'); 
+hold on;
+end
+hold on
+for i=5:8
+b=bar(i,gr_m(i));b.EdgeColor=col_m(i,:);b.FaceAlpha=0;b.LineWidth=1.5;
+hold on;
+text(i,round(gr_m(i),0),[num2str(round(gr_m(i),0)) '%'],'vert','bottom','horiz','center'); 
+hold on;
+end
+xlim([0 9]);xticks([1:1:8]);ylabel('Percentage of cells firing APs');xticklabels({'CP','CT','CCi','','GAD','PV','SST','VIP'});xtickangle(45);set(gca,'FontSize',11);
+ylim([0 50]);box off;h = gca;h.YAxis.Visible = 'off';title('Percentage of cells firing APs','FontSize',12,'FontWeight','normal');set(gca,'TickDir','out');
+hold on;
+text(1.5,40,'PNs','FontSize',12);text(5.75,40,'INs','FontSize',12);
+%% SAVE
+cd(save_folder);saveas(gcf, 'Fraction_spiking.pdf');
+
+
+
+
+
 %% Read out max spike frequency for all cell types
 [cpn_spk] = spike_counts(Ephys,cpn_k_cells);
 [ntsr_spk] = spike_counts(Ephys,ntsr_k_cells);
@@ -61,7 +192,35 @@ in_k_cells=cell_selecter(Ephys,'drugs',0,'label',2,'sol',1);
 [vip_spk] = spike_counts(Ephys,vip_k_cells);
 [gad_spk] = spike_counts(Ephys,in_k_cells);
 %% find threshold for fast spiker
-threshold_FS=round((prctile([som_spk],25) + prctile([pv_spk],5) + prctile([cpn_spk ntsr_spk penk_spk cci_spk],95))/3);
+threshold_FS=round((prctile([som_spk],25) + prctile([pv_spk],5) + prctile([cpn_spk ntsr_spk penk_spk cci_spk],95))/3)
+%% scatter plot (spike freq vs EPSP amplitude)
+%NOTE THAT ONE ST cell that fired has no max spiking hence its one less
+%cell for SST
+
+pointsize=100;
+fig4=figure;set(fig4, 'Position', [200, 400, 550, 500]);set(gcf,'color','w');
+% s1=scatter(cpn_spk,epsp_cpn,pointsize,'c','filled','MarkerFaceColor',([0 166 156]./256),'MarkerEdgeColor','w');hold on;
+% s2=scatter(ntsr_spk,epsp_ntsr,pointsize,'m','filled','MarkerFaceColor',([235 0 139]./256),'MarkerEdgeColor','w');hold on;
+% s3=scatter(penk_spk,epsp_penk,pointsize,'r','filled','MarkerFaceColor',([190 30 45]./256),'MarkerEdgeColor','w');hold on;
+%s4=scatter(cci_spk,epsp_cci,pointsize,'r','filled','MarkerFaceColor',([190 30 45]./256),'MarkerEdgeColor','w');hold on;
+s5=scatter(pv_spk,epsp_pv,pointsize,'y','filled','MarkerFaceColor',([246 146 30]./256),'MarkerEdgeColor','w');hold on;
+s6=scatter(som_spk,epsp_som,pointsize,'b','filled','MarkerFaceColor',([27 117 187]./256),'MarkerEdgeColor','w');hold on;
+s7=scatter(vip_spk,epsp_vip,pointsize,'g','filled','MarkerFaceColor',([0 165 81]./256),'MarkerEdgeColor','w');hold on;
+s8=scatter(gad_spk,epsp_gad,pointsize,'k','filled','MarkerFaceColor',([0.5 0.5 0.5]),'MarkerEdgeColor','w');hold on;
+xlim([-3 120]);ylim([-3 120]);
+hold on;line([threshold_FS threshold_FS],[ylim],'linewidth',0.5,'Color','k','LineStyle','--');
+hold on;line([xlim],[45 45],'linewidth',0.5,'Color','k','LineStyle','--');
+% legend({'CPN','CT','CCi','CCi','PV','SST','VIP','GAD'},'Location','northwest');
+legend({'PV','SST','VIP','GAD'},'Location','northwest');
+legend boxoff
+box off; ylabel('Light evoked response (mV)');xlabel('Max. spike frequency (Hz)');
+text(threshold_FS+1,45+4,'spike threshold','FontSize',12);
+text(10,120,'RS','FontSize',12);text(70,120,'FS','FontSize',12);
+set(gca,'FontSize',12);set(gca,'TickDir','out');
+%% SAVE
+cd(save_folder);saveas(gcf, 'Spikes_vs_APFfreq_INs.pdf');
+
+
 
 %% 
 [rmp_cpn maxsp_cpn rheo_cpn rin_cpn tau_cpn sag_cpn trace_cpn spike_time_cpn] = passive_readout(Ephys,cpn_k_cells);

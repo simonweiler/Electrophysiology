@@ -10,6 +10,8 @@
 %labels
 %1=callosal; 2=GAD; 3=PV; 4=Ntsr1 tdtomato; 5= Penk
 %6=SOM
+%% 
+save_folder='C:\Users\simonw\S1-V1 interaction Dropbox\Simon Weiler\Callosal_L6\SfN2023\Figures';
 %% Load data structure 
 str_L6    = 'D:\Postdoc_Margrie\Projects\Callosal\output';
 folder_list = uipickfiles('FilterSpec',str_L6);
@@ -183,8 +185,8 @@ g5=[];g5=ones(1,length(p5))*5;
 gro=[];gro=[g1 g2 g3 g4 g5]';
 fig7= figure;set(fig7, 'Name', 'Barplot groups');set(fig7, 'Position', [400, 500, 350, 300]);set(gcf,'color','w');
 hold on;line([0 6],[0 0],'LineStyle',':','Color','k','LineWidth',1)
-violins = violinplot(par, gro,'ViolinColor',[([235 0 139]./256);([190 30 45]./256);([246 146 30]./256);([27 117 187]./256);([0 165 81]./256)],'ShowMean', true,'ShowMedian', true);box off;
-xlim([0 6]);ylabel('CRI');set(gca,'FontSize',12);
+violins = violinplot(par, gro,'ViolinColor',[([235 0 139]./256);([190 30 45]./256);([246 146 30]./256);([27 117 187]./256);([0 165 81]./256)],'ShowMean', false,'ShowMedian', true);box off;
+xlim([0 6]);ylabel('CRACM Response Index');set(gca,'FontSize',12);
 % h = gca;h.XAxis.Visible = 'off';
 % set(gca,'xtick',[]);
 xticklabels({'CT','CCi','PV','SST','VIP'});
@@ -194,32 +196,39 @@ set(gca,'TickDir','out');
 %ex stats
 hold on;text(4.75,1,['***'],'FontSize',18);
 title('Excitation','Color','r','FontWeight','normal');
-%% in stats
+%% SAVE
+cd(save_folder);saveas(gcf, 'CRI_Excitation_violin.pdf');
 
+%% in stats
 hold on;text(4.9,1,['*'],'FontSize',18);
 hold on;text(3.9,1,['*'],'FontSize',18);
 title('Inhibition','Color','b','FontWeight','normal');
-%% 
-%% CT as example in pairoed scatter plot excitatry
-fig1= figure;set(fig1, 'Name', 'Barplot groups');set(fig1, 'Position', [400, 200, 320, 320]);set(gcf,'color','w');
- s1=scatter(ct_data(:,1),ct_data(:,2),35,'r','filled','o');axis square;hold on;rf=refline(1,0); rf.Color= [0 0 0];rf.LineStyle= '--';
+%% SAVE
+cd(save_folder);saveas(gcf, 'CRI_Inhibition_violin.pdf');
+%% CT vs CP as an example in paired scatter plot EXCITATION
+fig1= figure;set(fig1, 'Name', 'Barplot groups');set(fig1, 'Position', [400, 200, 340, 360]);set(gcf,'color','w');
+ s1=scatter(ct_data(:,1),ct_data(:,2),40,'r','filled','o');axis square;hold on;rf=refline(1,0); rf.Color= [0 0 0];rf.LineStyle= '--';
  s1.MarkerEdgeColor = [0 0 0];axis square;
  xlim([0 500]);ylim([0 500]);xticks([0:250:500]);yticks([0:250:500])
- xlabel('Light-evoked amplitude CPN (pA)');ylabel('Light-evoked amplitude CT (pA)');
+ xlabel({'Light-evoked amplitude (pA)'; 'CP'});ylabel({'CT';'Light-evoked amplitude (pA)'});
 text(50,500,['p=' num2str(round(p_ct,2))]);
 hold on;plot([0 max([xlim ylim])], [0 max([xlim ylim])], '--k');
-set(gca,'FontSize',11);set(gca,'TickDir','out'); 
-%% CT as example in paried scatter plot inhbitory
-fig1= figure;set(fig1, 'Name', 'Barplot groups');set(fig1, 'Position', [400, 200, 300, 300]);set(gcf,'color','w');
- s1=scatter(ct_data(:,1),ct_data(:,2),35,'b','filled','o');axis square;hold on;rf=refline(1,0); rf.Color= [0 0 0];rf.LineStyle= '--';
+set(gca,'FontSize',11);set(gca,'TickDir','out'); title('Excitation','Color','r','FontWeight','normal');
+%% SAVE
+cd(save_folder);saveas(gcf, 'Paired_scatter_EX_CPvsCT.pdf');
+%% CT vs CP as an example in paired scatter plot INHIBITION
+fig1= figure;set(fig1, 'Name', 'Barplot groups');set(fig1, 'Position', [400, 200, 340, 360]);set(gcf,'color','w');
+ s1=scatter(ct_data(:,1),ct_data(:,2),40,'b','filled','o');axis square;hold on;rf=refline(1,0); rf.Color= [0 0 0];rf.LineStyle= '--';
  s1.MarkerEdgeColor = [0 0 0];
  xlim([0 1100]);ylim([0 1100]);xticks([0:500:1000]);yticks([0:500:1000])
- xlabel('Light-evoked amplitude CPN (pA)');ylabel('Light-evoked amplitude CT (pA)');
+ xlabel({'Light-evoked amplitude (pA)'; 'CP'});ylabel({'CT';'Light-evoked amplitude (pA)'});
 text(50,1000,['p=' num2str(round(p_ct,2))]);
 hold on;plot([0 max([xlim ylim])], [0 max([xlim ylim])], '--k');
-set(gca,'FontSize',11);set(gca,'TickDir','out'); title('Inhibition','Color','b','FontWeight','normal');
+set(gca,'FontSize',11);set(gca,'TickDir','out'); title('Inhibition','Color','b','FontWeight','normal');title('Inhibition','Color','b','FontWeight','normal');
+%% SAVE
+cd(save_folder);saveas(gcf, 'Paired_scatter_IN_CPvsCT.pdf');
 %% E I ratio for E-I Index
-col=1
+col=1;
 ei_ct=(ntsr_cs(:,col)-ntsr_cs(:,col+1))./(ntsr_cs(:,col)+ntsr_cs(:,col+1));
 ei_cci=(penk_cs(:,col)-penk_cs(:,col+1))./(penk_cs(:,col)+penk_cs(:,col+1));
 ei_pv=(pv_cs(:,col)-pv_cs(:,col+1))./(pv_cs(:,col)+pv_cs(:,col+1));
@@ -229,7 +238,6 @@ ei_cp=[(ntsr_cpncs(:,col)-ntsr_cpncs(:,col+1))./(ntsr_cpncs(:,col)+ntsr_cpncs(:,
     (penk_cpncs(:,col)-penk_cpncs(:,col+1))./(penk_cpncs(:,col)+penk_cpncs(:,col+1));...
     (pv_cpncs(:,col)-pv_cpncs(:,col+1))./(pv_cpncs(:,col)+pv_cpncs(:,col+1));...
     (som_cpncs(:,col)-som_cpncs(:,col+1))./(som_cpncs(:,col)+som_cpncs(:,col+1))];
-%% 
 %% Violin plot for excitatory cells types vs inhbitory ones
 g1=[];g2=[];
 p1=[];p2=[];
@@ -250,7 +258,10 @@ ylim([-1.2 1.2]);
 %statitics
 p_ei=ranksum([ei_cp ;ei_ct ;ei_cci],[ei_pv ;ei_som ;ei_vip]);
 set(gca,'FontSize',11);set(gca,'TickDir','out'); hold on;text(1.25,1,['**'],'FontSize',18);
-%% example 
+%% SAVE
+cd(save_folder);saveas(gcf, 'EXIN_PNsvsINS.pdf'); 
+
+%% example read out CPs and CT with Cs solution for EPSC and IPSC example
 temp1=[];ntsr_cs1=[];
 for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',0,'label',4,'geno',6,'sol',2,'qualityinput',1,'pair',i);
@@ -261,9 +272,9 @@ for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',4,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cs2=sum(temp1);
-ntsr_cs=[];
-ntsr_cs=ntsr_cs1+ntsr_cs2;
-disp([num2str(sum(ntsr_cs)) ' ntsr_cs cells, nr ' num2str(find(ntsr_cs==1))])
+ntsr_csall=[];
+ntsr_csall=ntsr_cs1+ntsr_cs2;
+disp([num2str(sum(ntsr_csall)) ' ntsr_cs cells, nr ' num2str(find(ntsr_csall==1))])
 
 %CS NTSR1 paired (no drugs and before washin) CORRESPONDING CPN cells
 temp1=[];ntsr_cpncs1=[];
@@ -277,15 +288,15 @@ for i=1:6
 temp1(i,:)=cell_selecter(Ephys,'drugs',1,'label',1,'geno',6,'sol',2,'qualityinput',1,'pair',i);
 end
 ntsr_cpncs2=sum(temp1);
-ntsr_cpncs=[];
-ntsr_cpncs=ntsr_cpncs1+ntsr_cpncs2;
-disp([num2str(sum(ntsr_cpncs)) ' ntsr_cpncs cells, nr ' num2str(find(ntsr_cpncs==1))])
+ntsr_cpncsall=[];
+ntsr_cpncsall=ntsr_cpncs1+ntsr_cpncs2;
+disp([num2str(sum(ntsr_cpncsall)) ' ntsr_cpncs cells, nr ' num2str(find(ntsr_cpncsall==1))])
 %remove cell 253 from ntsr1 cause its pair is with TTX
-ntsr_cs(253)=0;
-disp([num2str(sum(ntsr_cs)) ' updated ntsr_cs cells, nr ' num2str(find(ntsr_cs==1))])
-%% 
+ntsr_csall(253)=0;
+disp([num2str(sum(ntsr_csall)) ' updated ntsr_cs cells, nr ' num2str(find(ntsr_csall==1))])
+%% Example plotter function epsc_ipsc_example
 %CP
-cnr=[];cnr=find(ntsr_cpncs==1)
+cnr=[];cnr=find(ntsr_cpncsall==1)
 a=4;
 ex_trace=[];ex_trace=Ephys(cnr(a)).sub_traces_train(:,2);
 in_trace=[];in_trace=Ephys(cnr(a)).sub_traces_train(:,1);
@@ -294,11 +305,15 @@ show_time=[3000:10000];
 start_time=5000;
 time_stop=2000;
 yborders=[-500 1000];
-tit='CP'
+tit='CP';
 
 epsc_ipsc_example(ex_trace,in_trace,sample_rate,show_time,start_time,time_stop,yborders,tit);
+ %% SAVE
+cd(save_folder);saveas(gcf, 'CP_example_EPSC_IPSC.pdf'); 
+%% 
+
 %CT
-cnr=[];cnr=find(ntsr_cs==1)
+cnr=[];cnr=find(ntsr_csall==1)
 ex_trace=[];ex_trace=Ephys(cnr(a)).sub_traces_train(:,2);
 in_trace=[];in_trace=Ephys(cnr(a)).sub_traces_train(:,1);
 sample_rate=sr;
@@ -306,37 +321,8 @@ show_time=[3000:10000];
 start_time=5000;
 time_stop=2000;
 yborders=[-500 1000];
-tit='CT'
+tit='CT';
 
 epsc_ipsc_example(ex_trace,in_trace,sample_rate,show_time,start_time,time_stop,yborders,tit);
-%% 
-
-cnr=1;
-ov_min=-250;ov_max=800;
-temp=[];
-temp=find(ntsr_cpncs_idx==1);
-fig4=figure;set(fig4, 'Position', [200, 800, 400, 200]);set(gcf,'color','w');
-subplot(1,2,1)
-plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color','r','LineWidth',1);set(gca,'box','off');
-hold on;plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,2),'Color','b','LineWidth',1);set(gca,'box','off');hold on;ylim([ov_min-10 ov_max]);
-hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
-%hold on;title('CP');
-axis off;
-
-cnr=3
-subplot(1,2,2)
-temp=[];
-temp=find(ntsr_cs_idx==1);
-plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,1),'Color','b','LineWidth',1);set(gca,'box','off');
-hold on;plot(Ephys(temp(cnr)).sub_traces_train(1:1*sr,2),'Color','r','LineWidth',1);set(gca,'box','off');
-hold on;ylim([ov_min-10 ov_max]);
-%title('Ntsr1','Color','k');
-hold on;plot([0.25*sr 0.25*sr],[ov_max ov_max],'Marker','v','MarkerFaceColor','c','MarkerEdgeColor','c');
-axis off;
-%Scale bar
- scale_x= 200;
- scale_y= 100;
- %scale barx
- hold on;x1= (1250*srF)-(100*srF);x2=1250*srF;p1=plot([x1 x2],[ov_min-10 ov_min-10],'-','Color','k','LineWidth',1.5);
- %scale bary
- hold on;y2= (ov_min-10)+scale_y;y1=(ov_min-10);p2=plot([x2 x2],[y1 y2],'-','Color','k','LineWidth',1.5);
+ %% SAVE
+cd(save_folder);saveas(gcf, 'CT_example_EPSC_IPSC.pdf'); 
